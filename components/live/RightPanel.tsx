@@ -350,7 +350,7 @@ function Delta({
   const trend = value > 0 ? "up" : "flat";
   const color =
     trend === "up"
-      ? "text-[color:var(--brand-2)]"
+      ? "text-brand-2"
       : "text-muted-foreground";
   const Icon = trend === "up" ? TrendingUp : Minus;
   return (
