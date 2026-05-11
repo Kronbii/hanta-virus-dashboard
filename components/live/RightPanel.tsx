@@ -490,7 +490,7 @@ function SourceRow({
         </span>
       </div>
       {health.error && (
-        <div className="mt-1 text-[11px] font-mono text-[color:var(--hot)]/90 truncate">
+        <div className="mt-1 text-[11px] font-mono text-(--hot)/90 truncate">
           ↳ {health.error}
         </div>
       )}
