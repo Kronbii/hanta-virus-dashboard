@@ -295,7 +295,7 @@ body {
 }
 
 .live-map .leaflet-bar a:last-child { border-bottom: none; }
-.live-map .leaflet-bar a:hover { background: rgba(255, 255, 255, 0.05); color: var(--warn); }
+.live-map .leaflet-bar a:hover { background: rgba(255, 255, 255, 0.05); color: var(--brand); }
 
 .live-map .leaflet-control-attribution {
   background: rgba(8, 14, 26, 0.85);
