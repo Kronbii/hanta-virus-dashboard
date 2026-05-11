@@ -255,12 +255,16 @@ body {
   height: 256px;
 }
 
+/* Let Leaflet's own width/height attributes drive the overlay SVG — its viewBox
+   and transform only line up when rendered size equals the attribute size.
+   Forcing CSS width/height:100% here scales the SVG and offsets every
+   CircleMarker / GeoJSON path. */
 .live-map .leaflet-pane svg {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
 }
 
 .live-map .leaflet-pane svg path {
