@@ -96,6 +96,7 @@ export async function LiveDashboard({
     aggregateNews(filters.country),
   ]);
 
+  // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
 
   const filteredEvents = applyEventFilters(eventsResult.events, filters);
@@ -103,11 +104,23 @@ export async function LiveDashboard({
   // The dashboard headlines reflect the current outbreak (ArcGIS Hondius),
   // not 30 years of WHO/CDC history. casesResult.* still surfaces in the
   // Source health badges so flaky upstreams are visible.
+  //
+  // PROBABLE and SUSPECTED are merged: the data layer keeps the distinction
+  // but every count surfaced to the UI lumps them under "SUSPECTED".
   const eventCountryRollup = rollupEventsByCountry(eventsResult.events);
-  const activeCases = eventsResult.events.filter((e) =>
-    ACTIVE_STATUSES.has(e.status),
-  ).length;
-  const fatalities = eventsResult.events.filter((e) => e.status === "DECEASED").length;
+  const statusBreakdown = { CONFIRMED: 0, SUSPECTED: 0, DECEASED: 0 };
+  for (const e of eventsResult.events) {
+    if (e.status === "CONFIRMED") statusBreakdown.CONFIRMED += 1;
+    else if (e.status === "SUSPECTED" || e.status === "PROBABLE")
+      statusBreakdown.SUSPECTED += 1;
+    else if (e.status === "DECEASED") statusBreakdown.DECEASED += 1;
+  }
+  const totalCases =
+    statusBreakdown.CONFIRMED +
+    statusBreakdown.SUSPECTED +
+    statusBreakdown.DECEASED;
+  const fatalities = statusBreakdown.DECEASED;
+  const deathRate = totalCases > 0 ? fatalities / totalCases : 0;
 
   const tracked = filteredEvents.length;
 
