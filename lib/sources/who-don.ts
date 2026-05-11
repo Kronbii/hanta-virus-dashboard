@@ -194,7 +194,8 @@ export async function fetchWhoDon(): Promise<SourceFetchResult<CaseRecord>> {
   }
     return ok(records);
   } catch (err) {
-    console.warn("[who-don] fetch failed:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[who-don] fetch failed: ${msg}`);
     return fail<CaseRecord>(err);
   }
 }

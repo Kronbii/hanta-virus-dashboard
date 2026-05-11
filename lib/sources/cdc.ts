@@ -59,7 +59,8 @@ export async function fetchCdc(): Promise<SourceFetchResult<CaseRecord>> {
       },
     ]);
   } catch (err) {
-    console.warn("[cdc] fetch failed:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[cdc] fetch failed: ${msg}`);
     return fail<CaseRecord>(err);
   }
 }

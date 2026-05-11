@@ -92,7 +92,8 @@ export async function fetchGoogleNews(): Promise<SourceFetchResult<NewsItem>> {
     }
     return ok(items);
   } catch (err) {
-    console.warn("[google-news] fetch failed:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[google-news] fetch failed: ${msg}`);
     return fail<NewsItem>(err);
   }
 }

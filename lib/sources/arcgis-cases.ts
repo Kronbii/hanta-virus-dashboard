@@ -117,7 +117,8 @@ export async function fetchArcgisHondius(): Promise<SourceFetchResult<CaseEvent>
     }
     return ok(events);
   } catch (err) {
-    console.warn("[arcgis-cases] fetch failed:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[arcgis-cases] fetch failed: ${msg}`);
     return fail<CaseEvent>(err);
   }
 }

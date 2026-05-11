@@ -46,7 +46,9 @@ function articleToNewsItem(a: GdeltArticle): NewsItem | null {
 
 export async function fetchGdelt(): Promise<SourceFetchResult<NewsItem>> {
   "use cache";
-  cacheLife({ stale: 60, revalidate: 900, expire: 3600 });
+  // GDELT's public API is frequently slow / flaky. Cache failures for an
+  // hour so we don't beat the upstream on every page render.
+  cacheLife({ stale: 600, revalidate: 3600, expire: 86400 });
   cacheTag("news");
 
   try {
@@ -60,7 +62,7 @@ export async function fetchGdelt(): Promise<SourceFetchResult<NewsItem>> {
 
     const res = await fetch(url.toString(), {
       headers: { "user-agent": UA, accept: "application/json" },
-      signal: AbortSignal.timeout(5000),
+      signal: AbortSignal.timeout(12000),
     });
     if (!res.ok) throw new Error(`GDELT HTTP ${res.status}`);
     const body = await res.text();
@@ -74,7 +76,10 @@ export async function fetchGdelt(): Promise<SourceFetchResult<NewsItem>> {
     }
     return ok(items);
   } catch (err) {
-    console.warn("[gdelt] fetch failed:", err);
+    // Just the message — printing the raw DOMException dumps a 25-line
+    // constants table that drowns the rest of the dev log.
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(`[gdelt] fetch failed: ${msg}`);
     return fail<NewsItem>(err);
   }
 }
