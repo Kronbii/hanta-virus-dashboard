@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Sparkline } from "./Sparkline";
 import { PanelCloseButton } from "./PanelToggles";
+import { useUiState } from "./UiState";
 import { STATUS_TINT, timeAgo } from "./utils";
 import type {
   CountryAggregate,
