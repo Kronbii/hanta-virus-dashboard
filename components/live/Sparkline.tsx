@@ -2,9 +2,15 @@ interface Props {
   data: number[];
   height?: number;
   color?: string;
+  peakIndex?: number;
 }
 
-export function Sparkline({ data, height = 44, color = "#C800DF" }: Props) {
+export function Sparkline({
+  data,
+  height = 44,
+  color = "#C800DF",
+  peakIndex,
+}: Props) {
   const max = Math.max(1, ...data);
   const w = 100;
   const stepX = data.length > 1 ? w / (data.length - 1) : w;
