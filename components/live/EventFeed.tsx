@@ -5,11 +5,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { STATUS_TINT, STATUS_INK, STATUS_LABEL, timeAgo, eventHeadline } from "./utils";
+import { FeedCloseButton } from "./PanelToggles";
 
 interface Props {
   events: CaseEvent[];
   totalCases: number;
   now: number;
+  /** "show" forces visible, "hide" forces hidden, "auto" = desktop visible / mobile hidden. */
+  mode: "show" | "hide" | "auto";
 }
 
 // PROBABLE shares its icon with SUSPECTED — they're presented identically.
@@ -23,12 +26,15 @@ const StatusIcon: Record<CaseEventStatus, React.ComponentType<{ className?: stri
   UNKNOWN: HelpCircle,
 };
 
-export function EventFeed({ events, totalCases, now }: Props) {
+export function EventFeed({ events, totalCases, now, mode }: Props) {
+  const visClass =
+    mode === "show" ? "flex" : mode === "hide" ? "hidden" : "hidden md:flex";
+  const containerClass = `${visClass} fixed z-30 flex-col overflow-hidden border border-border bg-[rgba(10,18,32,0.92)] md:bg-[rgba(10,18,32,0.78)] shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-md
+    inset-x-2 bottom-2 top-14 max-h-[calc(100vh-3.5rem-1rem)] rounded-t-2xl rounded-b-md
+    md:inset-x-auto md:left-4 md:top-16 md:bottom-14 md:max-h-none md:w-[360px] md:rounded-md`;
+
   return (
-    <aside
-      className="absolute left-4 top-16 bottom-14 z-10 flex w-[360px] flex-col overflow-hidden rounded-md border border-border bg-[rgba(10,18,32,0.78)] shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-md"
-      aria-label="Case events"
-    >
+    <aside className={containerClass} aria-label="Case events">
       <header className="flex items-center justify-between px-3.5 py-2.5 border-b border-border text-[11px] uppercase tracking-[0.14em]">
         <span className="font-medium">Case events</span>
         <span className="text-[10px] tracking-[0.08em] tabular-nums text-muted-foreground">
