@@ -298,7 +298,9 @@ export function ChoroplethMap({
       zoom={2}
       minZoom={2}
       maxZoom={7}
-      worldCopyJump={false}
+      // Infinite horizontal wrap — tiles repeat across world copies and the
+      // map view jumps to keep GeoJSON/markers aligned. Latitude is clamped.
+      worldCopyJump
       scrollWheelZoom
       wheelDebounceTime={40}
       wheelPxPerZoomLevel={120}
