@@ -1,5 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { sha1 } from "@/lib/aggregator/sha1";
+import { isoForCoordinates } from "@/lib/aggregator/point-in-country";
 import { UA } from "./user-agent";
 import { ok, fail, type SourceFetchResult } from "./result";
 import type { CaseEvent, CaseEventStatus } from "@/lib/types";
@@ -68,6 +69,7 @@ function featureToCaseEvent(f: ArcGisFeature): CaseEvent | null {
     id: sha1(`ARCGIS_HONDIUS|${lon}|${lat}|${p.CASE_ ?? p.TCLASS ?? ""}`),
     status,
     coordinates: [lon, lat],
+    countryIso3: isoForCoordinates(lon, lat),
     location: p.LASTLOCATION?.trim() || undefined,
     exposureGroup: p.Exposure_Group?.trim() || undefined,
     onset: toIsoDate(p.ONSET ?? undefined),

@@ -131,7 +131,22 @@ export async function fetchWhoDon(): Promise<SourceFetchResult<CaseRecord>> {
     const entries = data.value ?? [];
 
     const records: CaseRecord[] = [];
-  for (const e of entries) {
+    // WHO's $filter matches any DON whose Overview *contains* "hantavirus" —
+    // that pulls in decades of tangential reports (Yellow Fever Brazil 2017,
+    // Hurricane Mitch 1998, Cholera Niger 1999, Legionellosis Argentina 2022)
+    // that mention hantavirus once in passing. Narrow client-side to DONs
+    // whose title actually says hantavirus, and to the last 18 months so the
+    // active-case rollup reflects the current situation, not history.
+    const NOW = Date.now();
+    const MAX_AGE_MS = 18 * 30 * 24 * 60 * 60 * 1000;
+    const relevant = entries.filter((e) => {
+      if (!e.Title || !/hantavirus|hanta\s+virus/i.test(e.Title)) return false;
+      const t = Date.parse(e.PublicationDate);
+      if (!Number.isFinite(t)) return false;
+      return NOW - t <= MAX_AGE_MS;
+    });
+
+    for (const e of relevant) {
     const overview = plainText(e.Overview);
     const assessment = plainText(e.Assessment);
     const report = parseReport(e.Title, `${overview} ${assessment}`);
