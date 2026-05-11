@@ -17,12 +17,12 @@ import { useUiState } from "./UiState";
 import { Delta } from "./right-panel/Delta";
 import { StatusInline } from "./right-panel/StatusInline";
 import { MiniKpi } from "./right-panel/MiniKpi";
+import { SOURCE_META } from "./right-panel/source-meta";
 import { STATUS_TINT, timeAgo } from "./utils";
 import type {
   CountryAggregate,
   SourceHealth,
   CaseEvent,
-  AnySource,
 } from "@/lib/types";
 
 interface StatusBreakdown {
@@ -43,31 +43,6 @@ interface Props {
 }
 
 const DAY = 24 * 60 * 60 * 1000;
-
-const SOURCE_META: Record<
-  AnySource,
-  { name: string; role: string; itemNoun: string }
-> = {
-  ARCGIS_HONDIUS: {
-    name: "ArcGIS Hondius",
-    role: "Drives every headline number",
-    itemNoun: "case events",
-  },
-  WHO_DON: {
-    name: "WHO Disease Outbreak News",
-    role: "Audit cross-reference",
-    itemNoun: "DON records",
-  },
-  CDC: {
-    name: "CDC Hantavirus",
-    role: "US baseline reference",
-    itemNoun: "records",
-  },
-  ECDC: { name: "ECDC", role: "EU surveillance", itemNoun: "records" },
-  PAHO: { name: "PAHO", role: "Americas surveillance", itemNoun: "records" },
-  GDELT: { name: "GDELT 2.0", role: "News feed", itemNoun: "articles" },
-  GOOGLE_NEWS: { name: "Google News", role: "News feed", itemNoun: "articles" },
-};
 
 function buildSparkData(events: CaseEvent[], now: number): number[] {
   const buckets = new Array(14).fill(0);
