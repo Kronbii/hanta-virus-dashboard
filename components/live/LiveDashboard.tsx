@@ -130,6 +130,14 @@ export async function LiveDashboard({
     ...newsResult.health,
   ];
 
+  // Visibility modes — explicit URL override, otherwise viewport-driven
+  // (desktop shows by default, mobile hides by default). The left feed
+  // defaults to hidden everywhere; users opt in via the Cases pill.
+  const feedMode: "show" | "hide" | "auto" =
+    filters.feed === "show" ? "show" : filters.feed === "auto" ? "auto" : "hide";
+  const panelMode: "show" | "hide" | "auto" =
+    filters.panel === "show" ? "show" : filters.panel === "hide" ? "hide" : "auto";
+
   return (
     <main className="fixed inset-0 overflow-hidden bg-background text-foreground">
       <LiveMap countries={eventCountryRollup} events={filteredEvents} />
