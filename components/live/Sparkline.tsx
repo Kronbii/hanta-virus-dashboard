@@ -27,6 +27,12 @@ export function Sparkline({
 
   const areaPath = `${linePath} L${w},${height} L0,${height} Z`;
 
+  const lastPoint = points[points.length - 1];
+  const peak =
+    typeof peakIndex === "number" && peakIndex >= 0 && peakIndex < points.length
+      ? points[peakIndex]
+      : null;
+
   return (
     <svg
       viewBox={`0 0 ${w} ${height}`}
@@ -35,6 +41,7 @@ export function Sparkline({
       height={height}
       role="img"
       aria-label="14-day case trend"
+      className="overflow-visible"
     >
       <defs>
         <linearGradient id="sparkFill" x1="0" x2="0" y1="0" y2="1">
