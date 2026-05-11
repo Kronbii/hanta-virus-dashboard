@@ -1,4 +1,7 @@
+"use client";
+
 import { STATUS_TINT } from "./utils";
+import { useUiState } from "./UiState";
 
 interface Props {
   totalCases: number;
