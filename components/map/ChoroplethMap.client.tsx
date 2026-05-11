@@ -418,9 +418,9 @@ export function ChoroplethMap({
         })}
       </LayerGroup>
 
-      {/* Labels above everything else. */}
+      {/* Labels above everything else. Wraps along with the base tiles. */}
       <Pane name="labels" style={{ zIndex: 650, pointerEvents: "none" }}>
-        <TileLayer url={TILE_LABELS} noWrap />
+        <TileLayer url={TILE_LABELS} />
       </Pane>
     </MapContainer>
   );
