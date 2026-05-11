@@ -99,6 +99,17 @@ export function TopBar({ trackedCount, view, query }: Props) {
         </div>
       </div>
 
+      {/* Mobile menu trigger */}
+      <button
+        type="button"
+        onClick={() => setMobileMenuOpen((v) => !v)}
+        className="md:hidden ml-auto inline-flex h-9 w-9 items-center justify-center rounded-md text-foreground hover:bg-white/5 focus-visible:outline-none"
+        aria-label={mobileMenuOpen ? "Close filters" : "Open filters"}
+        aria-expanded={mobileMenuOpen}
+      >
+        {mobileMenuOpen ? <Menu className="size-4" /> : <Search className="size-4" />}
+      </button>
+
       <div className="ml-auto hidden md:flex items-center gap-2.5 text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
         <span className="inline-block size-2 rounded-full bg-[#4ade80] animate-pulse" />
         <span>
