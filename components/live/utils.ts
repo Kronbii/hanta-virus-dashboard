@@ -25,7 +25,7 @@ export const STATUS_INK: Record<CaseEventStatus, string> = {
 export const STATUS_LABEL: Record<CaseEventStatus, string> = {
   DECEASED: "FATAL",
   CONFIRMED: "CONFIRMED",
-  PROBABLE: "PROBABLE",
+  PROBABLE: "SUSPECTED",
   SUSPECTED: "SUSPECTED",
   MONITORING: "MONITORING",
   RECOVERED: "RECOVERED",
