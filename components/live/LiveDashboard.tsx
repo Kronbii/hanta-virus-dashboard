@@ -9,6 +9,8 @@ import { EventFeed } from "./EventFeed";
 import { RightPanel } from "./RightPanel";
 import { NewsTicker } from "./NewsTicker";
 import { LiveMap } from "./LiveMap";
+import { FeedOpenButton, PanelOpenButton } from "./PanelToggles";
+import { MobileStatsHud } from "./MobileStatsHud";
 
 export interface DashboardFilters {
   country?: string;
