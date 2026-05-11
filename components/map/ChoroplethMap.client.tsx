@@ -60,8 +60,8 @@ export function ChoroplethMap({
   data,
   colorRamp,
   emptyColor,
-  borderColor = "#FFFFFF",
-  hoverColor = "#B5462B",
+  borderColor,
+  hoverColor,
   highlightIso3,
   interactive = true,
   className,
@@ -70,6 +70,11 @@ export function ChoroplethMap({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+  // Border + hover colors derived from theme when not provided. SVG path
+  // attributes don't reliably resolve CSS variables, so we use real hex.
+  const effectiveBorder = borderColor ?? (isDark ? "#1F1B16" : "#FFFFFF");
+  const effectiveHover = hoverColor ?? (isDark ? "#D87A5F" : "#B5462B");
 
   const byIso3 = useMemo(() => {
     const m = new Map<string, CountryAggregate>();
@@ -111,14 +116,14 @@ export function ChoroplethMap({
     const isHighlight = !!highlightIso3 && iso3 === highlightIso3;
     if (!country) {
       return {
-        color: borderColor,
+        color: effectiveBorder,
         weight: 0.4,
         fillColor: emptyColor,
         fillOpacity: 0,
       };
     }
     return {
-      color: isHighlight ? hoverColor : borderColor,
+      color: isHighlight ? effectiveHover : effectiveBorder,
       weight: isHighlight ? 1.5 : 0.5,
       fillColor: colorScale(country.totalCases),
       fillOpacity: 0.85,
@@ -145,7 +150,7 @@ export function ChoroplethMap({
     layer.on({
       click: () => closuresRef.current.onSelect(iso3),
       mouseover: () => {
-        path.setStyle({ weight: 1.5, color: hoverColor });
+        path.setStyle({ weight: 1.5, color: effectiveHover });
         path.bringToFront();
       },
       mouseout: () => {
@@ -161,7 +166,6 @@ export function ChoroplethMap({
     });
   };
 
-  const isDark = resolvedTheme === "dark";
   const tiles = isDark ? TILES.dark : TILES.light;
   // GeoJSON key forces a remount when data length or highlight changes so
   // styleFor closes over the latest scale and selection.

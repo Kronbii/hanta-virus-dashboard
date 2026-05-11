@@ -29,40 +29,44 @@ export function MapSection({ countries, highlightIso3 }: Props) {
       </div>
 
       <div
-        className="mt-6 rounded-sm p-4 sm:p-6"
+        className="mt-6 rounded-sm p-1 sm:p-2"
         style={{ background: "var(--paper)", color: "var(--fg)" }}
       >
         {countries.length === 0 ? (
           <p
-            className="serif py-12 text-center text-sm italic"
+            className="serif py-24 text-center text-sm italic"
             style={{ color: "var(--muted)" }}
           >
             No country totals available — sources may be temporarily
             unreachable.
           </p>
         ) : (
-          <ChoroplethMap
-            data={countries}
-            colorRamp={RAMP}
-            emptyColor="var(--paper)"
-            oceanColor="transparent"
-            borderColor="var(--fg)"
-            graticuleColor="transparent"
-            hoverColor="var(--accent)"
-            highlightIso3={highlightIso3}
-            interactive
-          />
+          <div className="choropleth">
+            <ChoroplethMap
+              data={countries}
+              colorRamp={RAMP}
+              emptyColor="var(--bg)"
+              highlightIso3={highlightIso3}
+              interactive
+            />
+          </div>
         )}
       </div>
 
-      <p
-        className="serif mt-4 text-sm italic"
-        style={{ color: "var(--muted)" }}
-      >
-        Choropleth shading reflects cumulative reported cases across all
-        integrated sources. Countries shown in the paper tone have no records
-        in this dataset. Click a country to filter the news feed.
-      </p>
+      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-3">
+        <p
+          className="serif text-sm italic"
+          style={{ color: "var(--muted)" }}
+        >
+          Drag to pan · hold <span className="not-italic font-medium" style={{ color: "var(--fg)" }}>Shift</span> + scroll to zoom · click a country to filter the news feed.
+        </p>
+        <p
+          className="text-xs uppercase tracking-wider"
+          style={{ color: "var(--muted)" }}
+        >
+          Tile base: CARTO · OpenStreetMap
+        </p>
+      </div>
     </section>
   );
 }
