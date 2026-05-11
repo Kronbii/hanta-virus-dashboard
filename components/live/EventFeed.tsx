@@ -45,7 +45,7 @@ export function EventFeed({ events, totalCases, now, mode }: Props) {
         </div>
       </header>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         {events.length === 0 ? (
           <div className="px-4 py-6 text-xs leading-relaxed text-muted-foreground">
             No matching case events. Clear the filter to see the live ArcGIS Hondius feed.
