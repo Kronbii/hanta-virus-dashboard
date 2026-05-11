@@ -1,4 +1,4 @@
-import { Skull, AlertTriangle, HelpCircle, Eye, CircleCheck, Activity } from "lucide-react";
+import { Skull, AlertTriangle, HelpCircle, Eye, CircleCheck, Activity, ExternalLink } from "lucide-react";
 import { iso3ToName } from "@/lib/aggregator/country-codes";
 import type { CaseEvent, CaseEventStatus } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -38,16 +38,27 @@ export function EventFeed({ events, totalCases, now }: Props) {
       <ScrollArea className="flex-1">
         {events.length === 0 ? (
           <div className="px-4 py-6 text-xs leading-relaxed text-muted-foreground">
-            No active case events from the live ArcGIS Hondius tracker.
+            No matching case events. Clear the filter to see the live ArcGIS Hondius feed.
           </div>
         ) : (
           events.map((ev, i) => {
             const Icon = StatusIcon[ev.status];
             const tint = STATUS_TINT[ev.status];
             const ink = STATUS_INK[ev.status];
+            const Row = ev.sourceUrl ? "a" : "div";
+            const rowProps = ev.sourceUrl
+              ? {
+                  href: ev.sourceUrl,
+                  target: "_blank" as const,
+                  rel: "noreferrer noopener",
+                }
+              : {};
             return (
               <article key={ev.id}>
-                <div className="grid grid-cols-[28px_1fr] gap-2.5 px-3.5 py-3 cursor-pointer hover:bg-white/[0.03] transition-colors">
+                <Row
+                  {...rowProps}
+                  className="grid grid-cols-[28px_1fr] gap-2.5 px-3.5 py-3 transition-colors hover:bg-white/[0.03] focus-visible:bg-white/[0.05] focus-visible:outline-none cursor-pointer"
+                >
                   <div className="flex justify-center pt-0.5">
                     <span
                       className="grid size-6 place-items-center rounded-full border border-black/40"
@@ -69,6 +80,12 @@ export function EventFeed({ events, totalCases, now }: Props) {
                           {iso3ToName(ev.countryIso3)}
                         </span>
                       )}
+                      {ev.sourceUrl && (
+                        <ExternalLink
+                          className="ml-auto size-3 shrink-0 text-muted-foreground/70"
+                          aria-hidden
+                        />
+                      )}
                     </div>
                     <h4 className="mt-1 text-[13px] font-medium leading-snug text-foreground">
                       {eventHeadline(ev)}
@@ -85,7 +102,7 @@ export function EventFeed({ events, totalCases, now }: Props) {
                       </span>
                     </div>
                   </div>
-                </div>
+                </Row>
                 {i < events.length - 1 && <Separator className="opacity-50" />}
               </article>
             );

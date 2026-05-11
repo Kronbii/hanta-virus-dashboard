@@ -48,7 +48,6 @@ export function timeAgo(iso: string | undefined, now: number): string {
 
 export function eventHeadline(ev: CaseEvent): string {
   const loc = ev.location ?? ev.exposureGroup ?? "unspecified location";
-  const tag = STATUS_LABEL[ev.status] ?? ev.status;
   const noun =
     ev.status === "DECEASED" ? "Fatal case"
     : ev.status === "CONFIRMED" ? "Confirmed case"

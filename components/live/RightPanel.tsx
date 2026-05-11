@@ -1,4 +1,7 @@
+"use client";
+
 import { TrendingUp, Minus } from "lucide-react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -27,17 +30,42 @@ const SOURCE_LABEL: Record<string, string> = {
   ARCGIS_HONDIUS: "ArcGIS",
 };
 
+const DAY = 24 * 60 * 60 * 1000;
+
 function buildSparkData(events: CaseEvent[], now: number): number[] {
-  const bucketMs = 24 * 60 * 60 * 1000;
   const buckets = new Array(14).fill(0);
   for (const ev of events) {
     const t = ev.onset ? Date.parse(ev.onset) : NaN;
     if (!Number.isFinite(t)) continue;
     const diff = now - t;
-    const idx = 13 - Math.floor(diff / bucketMs);
+    const idx = 13 - Math.floor(diff / DAY);
     if (idx >= 0 && idx < 14) buckets[idx]++;
   }
   return buckets;
+}
+
+function countWithin(
+  events: CaseEvent[],
+  field: "onset" | "death",
+  now: number,
+  windowMs: number,
+  predicate?: (e: CaseEvent) => boolean,
+): number {
+  let n = 0;
+  for (const ev of events) {
+    if (predicate && !predicate(ev)) continue;
+    const raw = ev[field];
+    if (!raw) continue;
+    const t = Date.parse(raw);
+    if (!Number.isFinite(t)) continue;
+    if (now - t <= windowMs && now - t >= 0) n++;
+  }
+  return n;
+}
+
+function formatDelta(n: number, suffix: string): string {
+  const sign = n >= 0 ? "+" : "";
+  return `${sign}${n} / ${suffix}`;
 }
 
 export function RightPanel({
@@ -50,8 +78,40 @@ export function RightPanel({
   events,
   now,
 }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const selected = searchParams?.get("country") ?? null;
+
   const topCountries = countryRollup.slice(0, 5);
   const spark = buildSparkData(events, now);
+
+  const newCases24h = countWithin(events, "onset", now, DAY);
+  const newFatal24h = countWithin(
+    events,
+    "death",
+    now,
+    DAY,
+    (e) => e.status === "DECEASED",
+  );
+  const countriesWithRecent = (() => {
+    const seen = new Set<string>();
+    for (const ev of events) {
+      const t = ev.onset ? Date.parse(ev.onset) : NaN;
+      if (!Number.isFinite(t)) continue;
+      if (now - t > 7 * DAY) continue;
+      if (ev.countryIso3) seen.add(ev.countryIso3);
+    }
+    return seen.size;
+  })();
+
+  const onPickCountry = (iso3: string) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    if (params.get("country") === iso3) params.delete("country");
+    else params.set("country", iso3);
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
 
   return (
     <aside className="absolute right-4 top-16 bottom-14 z-10 flex w-[320px] flex-col gap-3">
@@ -62,9 +122,24 @@ export function RightPanel({
           </CardTitle>
         </CardHeader>
         <CardContent className="px-3.5 py-0">
-          <Kpi label="Active cases" value={totalCases} delta="+12 / 24h" />
-          <Kpi label="Countries" value={countries} delta="+1 / 7d" />
-          <Kpi label="Fatalities" value={fatalities} delta="+2 / 24h" trend="up" />
+          <Kpi
+            label="Active cases"
+            value={totalCases}
+            delta={formatDelta(newCases24h, "24h")}
+            trend={newCases24h > 0 ? "up" : "flat"}
+          />
+          <Kpi
+            label="Countries"
+            value={countries}
+            delta={formatDelta(countriesWithRecent, "7d")}
+            trend={countriesWithRecent > 0 ? "up" : "flat"}
+          />
+          <Kpi
+            label="Fatalities"
+            value={fatalities}
+            delta={formatDelta(newFatal24h, "24h")}
+            trend={newFatal24h > 0 ? "up" : "flat"}
+          />
           <Kpi label="Live event pins" value={liveEvents} delta="ArcGIS" trend="flat" />
         </CardContent>
       </Card>
@@ -84,18 +159,29 @@ export function RightPanel({
             Top countries
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-3.5 py-0 space-y-1.5">
+        <CardContent className="px-3.5 py-0 space-y-1">
           {topCountries.length === 0 && (
             <div className="text-xs text-muted-foreground">No country aggregates yet.</div>
           )}
-          {topCountries.map((c) => (
-            <div key={c.iso3} className="flex items-center justify-between gap-3 text-[11px]">
-              <span className="truncate text-foreground">{c.name}</span>
-              <span className="tabular-nums text-muted-foreground">
-                {c.totalCases.toLocaleString()}
-              </span>
-            </div>
-          ))}
+          {topCountries.map((c) => {
+            const active = selected === c.iso3;
+            return (
+              <button
+                key={c.iso3}
+                type="button"
+                onClick={() => onPickCountry(c.iso3)}
+                aria-pressed={active}
+                className={`flex w-full items-center justify-between gap-3 rounded-sm px-1.5 py-1 text-left text-[11px] transition-colors hover:bg-white/[0.04] focus-visible:bg-white/[0.06] focus-visible:outline-none ${
+                  active ? "bg-[#f6a623]/15 text-[#f6a623]" : ""
+                }`}
+              >
+                <span className="truncate">{c.name}</span>
+                <span className="tabular-nums text-muted-foreground">
+                  {c.totalCases.toLocaleString()}
+                </span>
+              </button>
+            );
+          })}
         </CardContent>
         <Separator className="my-3" />
         <CardHeader className="px-3.5 pb-2">
@@ -106,10 +192,12 @@ export function RightPanel({
         <CardContent className="px-3.5 py-0 flex flex-wrap gap-1.5">
           {sourceHealth.map((s) => {
             const label = SOURCE_LABEL[s.source] ?? s.source;
+            const title = s.error ? `${label}: ${s.error}` : `${label}: ${s.items} items`;
             return (
               <Badge
                 key={s.source}
                 variant="outline"
+                title={title}
                 className="rounded-full border-border bg-white/5 px-2 py-0.5 text-[10px] tracking-[0.04em] gap-1.5"
               >
                 <span

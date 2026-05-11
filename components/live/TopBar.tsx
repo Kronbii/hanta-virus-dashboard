@@ -1,6 +1,8 @@
 "use client";
 
-import { Search, Activity, Map, FileText, Database } from "lucide-react";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { Search, Activity, Map } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -8,9 +10,49 @@ import { LiveClock } from "./LiveClock";
 
 interface Props {
   trackedCount: number;
+  view: string;
+  query: string;
 }
 
-export function TopBar({ trackedCount }: Props) {
+const DEBOUNCE_MS = 250;
+
+export function TopBar({ trackedCount, view, query }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [, startTransition] = useTransition();
+  const [draftQuery, setDraftQuery] = useState(query);
+
+  // Keep local input in sync when the URL changes externally (e.g. back/forward).
+  useEffect(() => {
+    setDraftQuery(query);
+  }, [query]);
+
+  // Debounce typing → URL.
+  useEffect(() => {
+    if (draftQuery === query) return;
+    const id = window.setTimeout(() => {
+      const params = new URLSearchParams(searchParams?.toString() ?? "");
+      if (draftQuery) params.set("q", draftQuery);
+      else params.delete("q");
+      const qs = params.toString();
+      startTransition(() => {
+        router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      });
+    }, DEBOUNCE_MS);
+    return () => window.clearTimeout(id);
+  }, [draftQuery, query, pathname, router, searchParams]);
+
+  const setView = (next: string) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    if (next === "live") params.delete("view");
+    else params.set("view", next);
+    const qs = params.toString();
+    startTransition(() => {
+      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+    });
+  };
+
   return (
     <header className="absolute inset-x-0 top-0 z-20 flex h-12 items-center gap-4 border-b border-border bg-gradient-to-b from-[#080e1a]/95 to-[#080e1a]/70 px-4 backdrop-blur">
       <div className="flex items-center gap-2.5 text-[13px] font-bold tracking-[0.14em] uppercase">
@@ -26,19 +68,19 @@ export function TopBar({ trackedCount }: Props) {
 
       <Separator orientation="vertical" className="!h-5" />
 
-      <Tabs defaultValue="live">
+      <Tabs value={view} onValueChange={(v) => setView(String(v))}>
         <TabsList className="h-7 bg-transparent p-0 gap-0.5">
-          <TabsTrigger value="live" className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]">
+          <TabsTrigger
+            value="live"
+            className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]"
+          >
             <Activity className="size-3" /> Live
           </TabsTrigger>
-          <TabsTrigger value="cases" className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]">
+          <TabsTrigger
+            value="cases"
+            className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]"
+          >
             <Map className="size-3" /> Cases
-          </TabsTrigger>
-          <TabsTrigger value="reports" className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]">
-            <FileText className="size-3" /> Reports
-          </TabsTrigger>
-          <TabsTrigger value="sources" className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]">
-            <Database className="size-3" /> Sources
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -46,8 +88,10 @@ export function TopBar({ trackedCount }: Props) {
       <div className="relative flex-1 max-w-[380px]">
         <Search className="absolute left-2.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
         <Input
-          readOnly
-          placeholder="Filter region, source, lineage…"
+          value={draftQuery}
+          onChange={(e) => setDraftQuery(e.target.value)}
+          placeholder="Filter region, exposure group, case label…"
+          aria-label="Filter case events"
           className="h-7 pl-7 text-xs bg-white/[0.04] border-border placeholder:text-muted-foreground/80"
         />
       </div>
