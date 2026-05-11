@@ -35,11 +35,14 @@ export function EventFeed({ events, totalCases, now, mode }: Props) {
 
   return (
     <aside className={containerClass} aria-label="Case events">
-      <header className="flex items-center justify-between px-3.5 py-2.5 border-b border-border text-[11px] uppercase tracking-[0.14em]">
+      <header className="flex items-center justify-between gap-2 px-3.5 py-2.5 border-b border-border text-[11px] uppercase tracking-[0.14em]">
         <span className="font-medium">Case events</span>
-        <span className="text-[10px] tracking-[0.08em] tabular-nums text-muted-foreground">
-          {events.length} active · {totalCases.toLocaleString()} cumulative
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] tracking-[0.08em] tabular-nums text-muted-foreground">
+            {events.length} active · {totalCases.toLocaleString()} cumulative
+          </span>
+          <FeedCloseButton />
+        </div>
       </header>
 
       <ScrollArea className="flex-1">
