@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 /* ────────────────────────────────────────────────────────────────────────────
    Editorial palette — promoted from /styles/editorial mockup.
@@ -116,23 +117,99 @@ body {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Map shared styles.
+   Leaflet overrides — match the editorial palette.
    ────────────────────────────────────────────────────────────────────────── */
 
-.choropleth svg {
-  display: block;
+.choropleth {
+  position: relative;
+  height: 480px;
   width: 100%;
-  height: auto;
+  overflow: hidden;
+  border-radius: 4px;
 }
 
-.choropleth path[role="button"]:focus-visible,
-.choropleth path:focus-visible {
+.choropleth .leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: var(--paper);
+  font-family: var(--font-body), system-ui, sans-serif;
+  color: var(--fg);
+}
+
+/* Zoom control — restyle the squared rounded box to match our rules. */
+.choropleth .leaflet-bar {
+  border: 1px solid var(--rule);
+  box-shadow: none;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.choropleth .leaflet-bar a {
+  background: var(--paper);
+  color: var(--fg);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+.choropleth .leaflet-bar a:last-child {
+  border-bottom: none;
+}
+
+.choropleth .leaflet-bar a:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Attribution — small, low-contrast. */
+.choropleth .leaflet-control-attribution {
+  background: color-mix(in srgb, var(--paper) 85%, transparent);
+  color: var(--muted);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-top-left-radius: 4px;
+}
+
+.choropleth .leaflet-control-attribution a {
+  color: var(--accent);
+}
+
+/* Tooltip — editorial card with paper bg + rust top border. */
+.choropleth .leaflet-tooltip {
+  background: var(--tooltip-bg);
+  color: var(--fg);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--accent);
+  border-radius: 2px;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  padding: 6px 9px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.dark .choropleth .leaflet-tooltip {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+.choropleth .leaflet-tooltip strong {
+  font-family: var(--font-display), Georgia, serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
+.choropleth .leaflet-tooltip-top:before,
+.choropleth .leaflet-tooltip-bottom:before,
+.choropleth .leaflet-tooltip-left:before,
+.choropleth .leaflet-tooltip-right:before {
+  display: none;
+}
+
+/* Focus ring on focused geographies. */
+.choropleth .leaflet-interactive:focus-visible {
   outline: none;
   stroke: var(--accent);
-  stroke-width: 1.5;
-}
-
-.choropleth [data-highlight="true"] {
-  stroke: var(--accent);
-  stroke-width: 1.5;
+  stroke-width: 2;
 }
