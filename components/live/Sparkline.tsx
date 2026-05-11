@@ -49,12 +49,23 @@ export function Sparkline({
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
+      {/* baseline */}
+      <line
+        x1="0"
+        x2={w}
+        y1={height - 0.5}
+        y2={height - 0.5}
+        stroke="rgba(140,170,220,0.16)"
+        strokeWidth="0.5"
+        vectorEffect="non-scaling-stroke"
+      />
+
       <path d={areaPath} fill="url(#sparkFill)" />
       <path
         d={linePath}
         fill="none"
         stroke={color}
-        strokeWidth={1.2}
+        strokeWidth={1.4}
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
