@@ -22,6 +22,7 @@ export function TopBar({ trackedCount, view, query }: Props) {
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
   const [draftQuery, setDraftQuery] = useState(query);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Keep local input in sync when the URL changes externally (e.g. back/forward).
   useEffect(() => {
