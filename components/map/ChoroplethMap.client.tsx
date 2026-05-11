@@ -4,7 +4,8 @@ import { useEffect, useMemo, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import L, { type PathOptions } from "leaflet";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { useMap } from "react-leaflet";
 import { scaleQuantize } from "d3-scale";
 import type { Feature, Geometry } from "geojson";
 import { WORLD_GEOJSON } from "@/lib/topo-to-geojson";
@@ -37,21 +38,15 @@ const TILES = {
 } as const;
 
 /**
- * Holding Shift while scrolling the page over the map zooms the map.
- * Plain scroll just scrolls the page — matches the Mapbox docs convention.
+ * Defensive resize: when the map mounts inside a streaming Suspense
+ * boundary the container can be sized 0×0 for a frame, leaving Leaflet
+ * with stale tile math. Call invalidateSize on next tick.
  */
-function ShiftScrollZoom() {
+function ResizeOnMount() {
   const map = useMap();
   useEffect(() => {
-    const container = map.getContainer();
-    const onWheel = (e: WheelEvent) => {
-      if (!e.shiftKey) return;
-      e.preventDefault();
-      const delta = e.deltaY < 0 ? 0.5 : -0.5;
-      map.setZoom(map.getZoom() + delta, { animate: true });
-    };
-    container.addEventListener("wheel", onWheel, { passive: false });
-    return () => container.removeEventListener("wheel", onWheel);
+    const id = window.setTimeout(() => map.invalidateSize(), 50);
+    return () => window.clearTimeout(id);
   }, [map]);
   return null;
 }
@@ -179,7 +174,9 @@ export function ChoroplethMap({
       minZoom={2}
       maxZoom={6}
       worldCopyJump={false}
-      scrollWheelZoom={false}
+      scrollWheelZoom
+      wheelDebounceTime={40}
+      wheelPxPerZoomLevel={120}
       zoomControl
       attributionControl
       maxBounds={[
@@ -189,7 +186,7 @@ export function ChoroplethMap({
       maxBoundsViscosity={1}
       style={{ height: "100%", width: "100%" }}
     >
-      <ShiftScrollZoom />
+      <ResizeOnMount />
       <TileLayer
         key={isDark ? "dark" : "light"}
         url={tiles.url}

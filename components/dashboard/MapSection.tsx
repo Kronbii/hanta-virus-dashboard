@@ -58,7 +58,7 @@ export function MapSection({ countries, highlightIso3 }: Props) {
           className="serif text-sm italic"
           style={{ color: "var(--muted)" }}
         >
-          Drag to pan · hold <span className="not-italic font-medium" style={{ color: "var(--fg)" }}>Shift</span> + scroll to zoom · click a country to filter the news feed.
+          Drag to pan · scroll to zoom · click a country to filter the news feed.
         </p>
         <p
           className="text-xs uppercase tracking-wider"
