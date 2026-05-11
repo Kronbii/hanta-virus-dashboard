@@ -12,10 +12,11 @@ interface Props {
   now: number;
 }
 
+// PROBABLE shares its icon with SUSPECTED — they're presented identically.
 const StatusIcon: Record<CaseEventStatus, React.ComponentType<{ className?: string }>> = {
   DECEASED: Skull,
   CONFIRMED: AlertTriangle,
-  PROBABLE: HelpCircle,
+  PROBABLE: Eye,
   SUSPECTED: Eye,
   MONITORING: Activity,
   RECOVERED: CircleCheck,
