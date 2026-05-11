@@ -37,7 +37,7 @@ export function NewsTicker({ items }: Props) {
                 href={n.url}
                 target="_blank"
                 rel="noreferrer noopener"
-                className="flex h-full items-center gap-3 whitespace-nowrap text-[11px] hover:text-[color:var(--brand)] transition-colors"
+                className="flex h-full items-center gap-3 whitespace-nowrap text-[11px] hover:text-brand transition-colors"
               >
                 <Badge
                   variant="outline"
