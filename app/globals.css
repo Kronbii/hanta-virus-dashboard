@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Editorial palette — promoted from /styles/editorial mockup.
+   ────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --bg: #FAF7F2;        /* ivory */
+  --fg: #1A1714;        /* ink */
+  --muted: #6B5F55;
+  --rule: rgba(26, 23, 20, 0.16);
+  --paper: #FFFFFF;
+  --accent: #B5462B;    /* rust */
+  --accent-soft: rgba(181, 70, 43, 0.12);
+  --tooltip-bg: #FFFFFF;
+  --ok: #5C8A3F;
+  --warn: #C77E29;
+  --err: #A8323A;
+}
+
+.dark {
+  --bg: #161310;
+  --fg: #F2EDE4;
+  --muted: #B0A99E;
+  --rule: rgba(242, 237, 228, 0.16);
+  --paper: #1F1B16;
+  --accent: #D87A5F;
+  --accent-soft: rgba(216, 122, 95, 0.18);
+  --tooltip-bg: #1F1B16;
+  --ok: #8FB872;
+  --warn: #D9A155;
+  --err: #D9646C;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-paper: var(--paper);
+  --color-accent: var(--accent);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Base
+   ────────────────────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+html {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.serif {
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.rule {
+  border-color: var(--rule);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Accessibility
+   ────────────────────────────────────────────────────────────────────────── */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Map shared styles.
+   ────────────────────────────────────────────────────────────────────────── */
+
+.choropleth svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.choropleth path[role="button"]:focus-visible,
+.choropleth path:focus-visible {
+  outline: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.choropleth [data-highlight="true"] {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
