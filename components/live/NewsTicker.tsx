@@ -41,7 +41,7 @@ export function NewsTicker({ items }: Props) {
               >
                 <Badge
                   variant="outline"
-                  className="rounded-xs border-border bg-white/[0.04] px-1.5 py-0 text-[9px] uppercase tracking-[0.12em] text-foreground font-normal"
+                  className="rounded-xs border-border bg-white/4 px-1.5 py-0 text-[9px] uppercase tracking-[0.12em] text-foreground font-normal"
                 >
                   {SOURCE_LABEL[n.source] ?? n.source}
                 </Badge>
