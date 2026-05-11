@@ -4,7 +4,7 @@ interface Props {
   color?: string;
 }
 
-export function Sparkline({ data, height = 44, color = "#f6a623" }: Props) {
+export function Sparkline({ data, height = 44, color = "#C800DF" }: Props) {
   const max = Math.max(1, ...data);
   const w = 100;
   const stepX = data.length > 1 ? w / (data.length - 1) : w;
