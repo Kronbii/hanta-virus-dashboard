@@ -140,7 +140,12 @@ export async function LiveDashboard({
 
   return (
     <main className="fixed inset-0 overflow-hidden bg-background text-foreground">
-      <LiveMap countries={eventCountryRollup} events={filteredEvents} />
+      <LiveMap
+        countries={eventCountryRollup}
+        events={filteredEvents}
+        feedVisible={feedMode !== "hide"}
+        panelVisible={panelMode !== "hide"}
+      />
 
       <TopBar
         trackedCount={tracked}
@@ -150,20 +155,46 @@ export async function LiveDashboard({
 
       <EventFeed
         events={filteredEvents}
-        totalCases={activeCases}
+        totalCases={totalCases}
         now={now}
+        mode={feedMode}
       />
 
       <RightPanel
-        totalCases={activeCases}
-        countries={eventCountryRollup.length}
+        totalCases={totalCases}
         fatalities={fatalities}
-        liveEvents={filteredEvents.length}
+        deathRate={deathRate}
+        statusBreakdown={statusBreakdown}
         sourceHealth={allHealth}
         countryRollup={eventCountryRollup}
         events={filteredEvents}
         now={now}
+        mode={panelMode}
       />
+
+      {/* Mobile-only HUD: floats the headline numbers under the TopBar
+          when the user hasn't expanded the full stats sheet. */}
+      {panelMode !== "show" && (
+        <MobileStatsHud
+          totalCases={totalCases}
+          deaths={fatalities}
+          deathRate={deathRate}
+        />
+      )}
+
+      {/* Open buttons surface when a panel is hidden. In auto mode the
+          panel is desktop-visible / mobile-hidden, so the open button is
+          mobile-only. In hide mode it's always shown. */}
+      {feedMode !== "show" && (
+        <div className={feedMode === "hide" ? "" : "md:hidden"}>
+          <FeedOpenButton count={tracked} />
+        </div>
+      )}
+      {panelMode !== "show" && (
+        <div className={panelMode === "hide" ? "" : "md:hidden"}>
+          <PanelOpenButton activeCases={totalCases} />
+        </div>
+      )}
 
       <NewsTicker items={newsResult.items} />
     </main>
