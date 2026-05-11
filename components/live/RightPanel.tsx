@@ -402,7 +402,7 @@ function MiniKpi({
   accent?: boolean;
 }) {
   return (
-    <div className="rounded-md bg-white/[0.025] ring-1 ring-inset ring-border px-2 py-2 min-w-0">
+    <div className="rounded-md bg-white/2.5 ring-1 ring-inset ring-border px-2 py-2 min-w-0">
       <div className="flex items-center gap-1.5">
         <span
           aria-hidden
