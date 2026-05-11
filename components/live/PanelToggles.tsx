@@ -7,11 +7,11 @@ const CLOSE_BUTTON =
   "inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none";
 
 export function FeedCloseButton() {
-  const onClose = useToggle("feed", "hide");
+  const { setFeed } = useUiState();
   return (
     <button
       type="button"
-      onClick={onClose}
+      onClick={() => setFeed("closed")}
       aria-label="Hide case events panel"
       className={CLOSE_BUTTON}
     >
@@ -21,11 +21,11 @@ export function FeedCloseButton() {
 }
 
 export function PanelCloseButton() {
-  const onClose = useToggle("panel", "hide");
+  const { setPanel } = useUiState();
   return (
     <button
       type="button"
-      onClick={onClose}
+      onClick={() => setPanel("closed")}
       aria-label="Hide stats panel"
       className={CLOSE_BUTTON}
     >
