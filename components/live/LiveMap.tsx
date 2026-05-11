@@ -4,6 +4,8 @@ import type { CaseEvent, CountryAggregate } from "@/lib/types";
 interface Props {
   countries: CountryAggregate[];
   events: CaseEvent[];
+  feedVisible?: boolean;
+  panelVisible?: boolean;
 }
 
 // Live-tracker choropleth ramp (5 stops, deep → bright)
@@ -15,7 +17,7 @@ const RAMP: [string, string, string, string, string] = [
   "#6da6ec",
 ];
 
-export function LiveMap({ countries, events }: Props) {
+export function LiveMap({ countries, events, feedVisible, panelVisible }: Props) {
   return (
     <div className="absolute inset-0 z-0 live-map">
       <ChoroplethMap
@@ -26,6 +28,8 @@ export function LiveMap({ countries, events }: Props) {
         emptyColor="#0e1a2c"
         borderColor="#22324e"
         hoverColor="#C800DF"
+        feedVisible={feedVisible}
+        panelVisible={panelVisible}
       />
       {/* radial glow overlay to lift hot-zones visually */}
       <div
