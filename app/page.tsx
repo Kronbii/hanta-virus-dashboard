@@ -8,14 +8,17 @@ interface SearchParams {
   view?: string;
 }
 
-export default function Page({
-  searchParams,
-}: {
+interface PageProps {
   searchParams: Promise<SearchParams>;
-}) {
+}
+
+export default function Page(props: PageProps) {
+  // Defer the searchParams Promise into the suspended child. Touching the
+  // prop in the page body (even destructuring it) opts the static shell out
+  // of partial prerendering in Next 16 cacheComponents mode.
   return (
     <Suspense fallback={<DashboardSkeleton />}>
-      <LiveDashboard searchParams={searchParams} />
+      <LiveDashboard searchParams={props.searchParams} />
     </Suspense>
   );
 }
