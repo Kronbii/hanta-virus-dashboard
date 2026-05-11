@@ -53,8 +53,7 @@ export function eventHeadline(ev: CaseEvent): string {
   const noun =
     ev.status === "DECEASED" ? "Fatal case"
     : ev.status === "CONFIRMED" ? "Confirmed case"
-    : ev.status === "PROBABLE" ? "Probable case"
-    : ev.status === "SUSPECTED" ? "Suspected case"
+    : ev.status === "PROBABLE" || ev.status === "SUSPECTED" ? "Suspected case"
     : ev.status === "RECOVERED" ? "Recovered case"
     : ev.status === "MONITORING" ? "Case under monitoring"
     : "Case reported";
