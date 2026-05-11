@@ -87,7 +87,7 @@ export function TopBar({ trackedCount, view, query }: Props) {
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-[380px]">
+        <div className="relative flex-1 max-w-95">
           <Search className="absolute left-2.5 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={draftQuery}
