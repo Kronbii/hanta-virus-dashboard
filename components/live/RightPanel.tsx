@@ -380,7 +380,7 @@ function StatusInline({
     <span className="inline-flex items-baseline gap-1 font-semibold text-foreground/85">
       <span
         aria-hidden
-        className="inline-block size-1.5 rounded-full translate-y-[-1px]"
+        className="inline-block size-1.5 rounded-full -translate-y-px"
         style={{ background: STATUS_TINT[name] }}
       />
       {label ?? name}
