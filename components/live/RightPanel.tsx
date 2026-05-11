@@ -198,7 +198,7 @@ export function RightPanel({
                 >
                   <Info className="size-3" />
                 </TooltipTrigger>
-                <TooltipContent className="max-w-[240px] text-[11px] leading-snug">
+                <TooltipContent className="max-w-60 text-[11px] leading-snug">
                   Live from the ArcGIS Hondius feed. PROBABLE cases are
                   rolled in with SUSPECTED. MONITORING and RECOVERED are
                   excluded.
