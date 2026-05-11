@@ -23,6 +23,9 @@ function formatPct(x: number): string {
  * full stats sheet.
  */
 export function MobileStatsHud({ totalCases, deaths, deathRate }: Props) {
+  const { panel } = useUiState();
+  // Hide when the full stats sheet is open — the same numbers are there.
+  if (panel === "open") return null;
   return (
     <div
       role="region"
