@@ -1,4 +1,5 @@
 import { ChoroplethMap } from "@/components/map/ChoroplethMap";
+import { StatusLegend } from "@/components/map/StatusLegend";
 import type { CaseEvent, CountryAggregate } from "@/lib/types";
 
 const RAMP: [string, string, string, string, string] = [
@@ -53,10 +54,11 @@ export function MapSection({ countries, events, highlightIso3 }: Props) {
               data={countries}
               events={events}
               colorRamp={RAMP}
-              emptyColor="var(--bg)"
+              emptyColor="#1A1714"
               highlightIso3={highlightIso3}
               interactive
             />
+            <StatusLegend events={events} />
           </div>
         )}
       </div>
