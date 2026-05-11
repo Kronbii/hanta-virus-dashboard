@@ -31,6 +31,9 @@ export interface ChoroplethMapProps {
   /** When true (default) clicking a country sets ?country= in the URL. */
   interactive?: boolean;
   className?: string;
+  /** Whether the left/right floating panels are visible — affects fit padding. */
+  feedVisible?: boolean;
+  panelVisible?: boolean;
 }
 
 // Dark editorial basemap — split into land and label tile layers so the
