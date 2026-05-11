@@ -22,8 +22,7 @@ export function NewsTicker({ items }: Props) {
       </div>
       <div
         className="relative flex-1 overflow-hidden h-full
-          [mask-image:linear-gradient(to_right,transparent_0,#000_64px,#000_calc(100%-64px),transparent_100%)]
-          [-webkit-mask-image:linear-gradient(to_right,transparent_0,#000_64px,#000_calc(100%-64px),transparent_100%)]"
+          mask-[linear-gradient(to_right,transparent_0,#000_64px,#000_calc(100%-64px),transparent_100%)]"
       >
         {visible.length === 0 ? (
           <div className="flex h-full items-center px-4 text-xs text-muted-foreground">
