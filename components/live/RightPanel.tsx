@@ -15,6 +15,7 @@ import { Sparkline } from "./Sparkline";
 import { PanelCloseButton } from "./PanelToggles";
 import { useUiState } from "./UiState";
 import { Delta } from "./right-panel/Delta";
+import { StatusInline } from "./right-panel/StatusInline";
 import { STATUS_TINT, timeAgo } from "./utils";
 import type {
   CountryAggregate,
@@ -338,25 +339,6 @@ export function RightPanel({
 /* ──────────────────────────────────────────────────────────────────────────
    Sub-components
    ────────────────────────────────────────────────────────────────────── */
-
-function StatusInline({
-  name,
-  label,
-}: {
-  name: keyof typeof STATUS_TINT;
-  label?: string;
-}) {
-  return (
-    <span className="inline-flex items-baseline gap-1 font-semibold text-foreground/85">
-      <span
-        aria-hidden
-        className="inline-block size-1.5 rounded-full -translate-y-px"
-        style={{ background: STATUS_TINT[name] }}
-      />
-      {label ?? name}
-    </span>
-  );
-}
 
 function MiniKpi({
   value,
