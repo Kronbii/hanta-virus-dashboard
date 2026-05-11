@@ -74,13 +74,13 @@ export function TopBar({ trackedCount, view, query }: Props) {
           <TabsList className="h-7 bg-transparent p-0 gap-0.5">
             <TabsTrigger
               value="live"
-              className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]"
+              className="h-7 px-2.5 text-[11px] uppercase tracking-widest gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]"
             >
               <Activity className="size-3" /> Live
             </TabsTrigger>
             <TabsTrigger
               value="cases"
-              className="h-7 px-2.5 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]"
+              className="h-7 px-2.5 text-[11px] uppercase tracking-widest gap-1.5 data-[state=active]:bg-white/5 data-[state=active]:text-foreground rounded-[3px]"
             >
               <Map className="size-3" /> Cases
             </TabsTrigger>
@@ -143,13 +143,13 @@ export function TopBar({ trackedCount, view, query }: Props) {
             <TabsList className="h-9 bg-white/[0.04] p-0.5 gap-0.5 w-full">
               <TabsTrigger
                 value="live"
-                className="flex-1 h-8 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-foreground rounded-[3px]"
+                className="flex-1 h-8 text-[11px] uppercase tracking-widest gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-foreground rounded-[3px]"
               >
                 <Activity className="size-3" /> Live
               </TabsTrigger>
               <TabsTrigger
                 value="cases"
-                className="flex-1 h-8 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-foreground rounded-[3px]"
+                className="flex-1 h-8 text-[11px] uppercase tracking-widest gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-foreground rounded-[3px]"
               >
                 <Map className="size-3" /> Cases
               </TabsTrigger>
