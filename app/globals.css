@@ -25,6 +25,10 @@
   --cool: #38bdf8;
   --ok: #4ade80;
   --neutral: #cbd5e1;
+  /* Contemporary brand accents — used for selection / KPI signals */
+  --brand: #C800DF;
+  --brand-2: #E60076;
+  --brand-ink: #ffffff;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
