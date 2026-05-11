@@ -4,7 +4,7 @@ import { X, PanelLeftOpen, PanelRightOpen } from "lucide-react";
 import { useUiState } from "./UiState";
 
 const CLOSE_BUTTON =
-  "inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none";
+  "inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/6 hover:text-foreground focus-visible:outline-none";
 
 export function FeedCloseButton() {
   const { setFeed } = useUiState();
