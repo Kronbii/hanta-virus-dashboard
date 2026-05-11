@@ -2,18 +2,26 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useTheme } from "next-themes";
 import L, { type PathOptions } from "leaflet";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import { useMap } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  GeoJSON,
+  CircleMarker,
+  Popup,
+  Pane,
+  LayerGroup,
+  useMap,
+} from "react-leaflet";
 import { scaleQuantize } from "d3-scale";
 import type { Feature, Geometry } from "geojson";
 import { WORLD_GEOJSON } from "@/lib/topo-to-geojson";
 import { numericToAlpha3 } from "@/lib/iso-numeric";
-import type { CountryAggregate } from "@/lib/types";
+import type { CaseEvent, CaseEventStatus, CountryAggregate } from "@/lib/types";
 
 export interface ChoroplethMapProps {
   data: CountryAggregate[];
+  events: CaseEvent[];
   colorRamp: [string, string, string, string, string];
   emptyColor: string;
   borderColor?: string;
@@ -24,18 +32,37 @@ export interface ChoroplethMapProps {
   className?: string;
 }
 
-const TILES = {
-  light: {
-    url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    attribution:
-      '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
-  },
-  dark: {
-    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-    attribution:
-      '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
-  },
-} as const;
+// Dark editorial basemap — split into land and label tile layers so the
+// label tiles sit above the markers (matching Esri's Human Geography Dark
+// layered approach used by the ArcGIS Hondius dashboard).
+const TILE_LAND =
+  "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png";
+const TILE_LABELS =
+  "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png";
+const TILE_ATTRIBUTION =
+  '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>';
+
+// Status palette tuned to the editorial rust ramp (deep → light) so the
+// pins read as a severity gradient over the dark base.
+const STATUS_COLOR: Record<CaseEventStatus, string> = {
+  DECEASED: "#7A2F1C",
+  CONFIRMED: "#E63946",
+  PROBABLE: "#D17557",
+  SUSPECTED: "#D9A155",
+  MONITORING: "#C9B89E",
+  RECOVERED: "#5C8A3F",
+  UNKNOWN: "#6B5F55",
+};
+
+const STATUS_RADIUS: Record<CaseEventStatus, number> = {
+  DECEASED: 7,
+  CONFIRMED: 6,
+  PROBABLE: 5,
+  SUSPECTED: 5,
+  MONITORING: 4,
+  RECOVERED: 5,
+  UNKNOWN: 4,
+};
 
 /**
  * Defensive resize: when the map mounts inside a streaming Suspense
@@ -51,8 +78,45 @@ function ResizeOnMount() {
   return null;
 }
 
+/**
+ * Fit the map to the bounding box of all case events on initial load (so a
+ * user lands looking at the active cluster instead of an empty world).
+ * Falls back to a world view when there are no events.
+ */
+function FitToEvents({ events }: { events: CaseEvent[] }) {
+  const map = useMap();
+  const didFit = useRef(false);
+  useEffect(() => {
+    if (didFit.current) return;
+    if (events.length === 0) return;
+    const points = events.map(
+      (e) => [e.coordinates[1], e.coordinates[0]] as [number, number],
+    );
+    const bounds = L.latLngBounds(points);
+    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 5, animate: false });
+    didFit.current = true;
+  }, [events, map]);
+  return null;
+}
+
+function formatDate(iso: string | undefined): string | undefined {
+  if (!iso) return undefined;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return undefined;
+  return d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  });
+}
+
+function statusLabel(s: CaseEventStatus): string {
+  return s.charAt(0) + s.slice(1).toLowerCase();
+}
+
 export function ChoroplethMap({
   data,
+  events,
   colorRamp,
   emptyColor,
   borderColor,
@@ -64,12 +128,9 @@ export function ChoroplethMap({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
-  // Border + hover colors derived from theme when not provided. SVG path
-  // attributes don't reliably resolve CSS variables, so we use real hex.
-  const effectiveBorder = borderColor ?? (isDark ? "#1F1B16" : "#FFFFFF");
-  const effectiveHover = hoverColor ?? (isDark ? "#D87A5F" : "#B5462B");
+  // Forced dark base regardless of page theme — matches the ArcGIS map.
+  const effectiveBorder = borderColor ?? "#3A322B";
+  const effectiveHover = hoverColor ?? "#D87A5F";
 
   const byIso3 = useMemo(() => {
     const m = new Map<string, CountryAggregate>();
@@ -96,8 +157,7 @@ export function ChoroplethMap({
     router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
 
-  // We keep these in refs so onEachFeature (called once at mount per layer)
-  // sees the latest closure when the data or selection changes.
+  // Closures-via-ref so onEachFeature (bound once per feature) sees latest data.
   const closuresRef = useRef({ byIso3, colorScale, highlightIso3, onSelect });
   closuresRef.current = { byIso3, colorScale, highlightIso3, onSelect };
 
@@ -119,9 +179,9 @@ export function ChoroplethMap({
     }
     return {
       color: isHighlight ? effectiveHover : effectiveBorder,
-      weight: isHighlight ? 1.5 : 0.5,
+      weight: isHighlight ? 1.5 : 0.4,
       fillColor: colorScale(country.totalCases),
-      fillOpacity: 0.85,
+      fillOpacity: 0.55,
     };
   };
 
@@ -132,8 +192,8 @@ export function ChoroplethMap({
     const displayName = country?.name ?? featureName ?? "Unknown";
 
     const tooltip = country
-      ? `<strong>${displayName}</strong><br/>${country.totalCases.toLocaleString()} cases`
-      : `<strong>${displayName}</strong><br/>No data`;
+      ? `<strong>${displayName}</strong><br/>${country.totalCases.toLocaleString()} cases (cumulative)`
+      : `<strong>${displayName}</strong><br/>No country-level total`;
     layer.bindTooltip(tooltip, {
       direction: "top",
       sticky: true,
@@ -145,7 +205,7 @@ export function ChoroplethMap({
     layer.on({
       click: () => closuresRef.current.onSelect(iso3),
       mouseover: () => {
-        path.setStyle({ weight: 1.5, color: effectiveHover });
+        path.setStyle({ weight: 1.5, color: effectiveHover, fillOpacity: 0.7 });
         path.bringToFront();
       },
       mouseout: () => {
@@ -161,10 +221,9 @@ export function ChoroplethMap({
     });
   };
 
-  const tiles = isDark ? TILES.dark : TILES.light;
-  // GeoJSON key forces a remount when data length or highlight changes so
-  // styleFor closes over the latest scale and selection.
-  const geoKey = `${isDark ? "d" : "l"}-${data.length}-${highlightIso3 ?? ""}`;
+  // Re-key the GeoJSON layer when its data or highlight changes so style
+  // closures re-bind cleanly.
+  const geoKey = `${data.length}-${highlightIso3 ?? ""}`;
 
   return (
     <MapContainer
@@ -172,7 +231,7 @@ export function ChoroplethMap({
       center={[20, 0]}
       zoom={2}
       minZoom={2}
-      maxZoom={6}
+      maxZoom={7}
       worldCopyJump={false}
       scrollWheelZoom
       wheelDebounceTime={40}
@@ -187,18 +246,108 @@ export function ChoroplethMap({
       style={{ height: "100%", width: "100%" }}
     >
       <ResizeOnMount />
-      <TileLayer
-        key={isDark ? "dark" : "light"}
-        url={tiles.url}
-        attribution={tiles.attribution}
-        noWrap
-      />
+      <FitToEvents events={events} />
+
+      {/* Dark base: land only. */}
+      <TileLayer url={TILE_LAND} attribution={TILE_ATTRIBUTION} noWrap />
+
+      {/* Subtle choropleth — country shading under the markers. */}
       <GeoJSON
         key={geoKey}
         data={WORLD_GEOJSON}
         style={baseStyleFor}
         onEachFeature={onEachFeature}
       />
+
+      {/* Status-colored case-event markers. */}
+      <LayerGroup>
+        {events.map((ev) => {
+          const fill = STATUS_COLOR[ev.status];
+          const radius = STATUS_RADIUS[ev.status];
+          return (
+            <CircleMarker
+              key={ev.id}
+              center={[ev.coordinates[1], ev.coordinates[0]]}
+              radius={radius}
+              pathOptions={{
+                color: "#0A0A0A",
+                weight: 1,
+                fillColor: fill,
+                fillOpacity: 0.95,
+              }}
+            >
+              <Popup className="case-popup">
+                <div className="case-popup-body">
+                  <div className="case-popup-status">
+                    <span
+                      aria-hidden
+                      className="case-popup-dot"
+                      style={{ background: fill }}
+                    />
+                    <span>{statusLabel(ev.status)}</span>
+                    {ev.caseLabel && (
+                      <span className="case-popup-label">· {ev.caseLabel}</span>
+                    )}
+                  </div>
+                  {ev.location && (
+                    <div className="case-popup-loc">{ev.location}</div>
+                  )}
+                  {ev.exposureGroup && (
+                    <div className="case-popup-cohort">{ev.exposureGroup}</div>
+                  )}
+                  <dl className="case-popup-meta">
+                    {formatDate(ev.onset) && (
+                      <>
+                        <dt>Onset</dt>
+                        <dd>{formatDate(ev.onset)}</dd>
+                      </>
+                    )}
+                    {formatDate(ev.death) && (
+                      <>
+                        <dt>Death</dt>
+                        <dd>{formatDate(ev.death)}</dd>
+                      </>
+                    )}
+                    {typeof ev.age === "number" && (
+                      <>
+                        <dt>Age</dt>
+                        <dd>{ev.age}</dd>
+                      </>
+                    )}
+                    {ev.sex === 1 && (
+                      <>
+                        <dt>Sex</dt>
+                        <dd>Male</dd>
+                      </>
+                    )}
+                    {ev.sex === 2 && (
+                      <>
+                        <dt>Sex</dt>
+                        <dd>Female</dd>
+                      </>
+                    )}
+                  </dl>
+                  {ev.sourceUrl && (
+                    <a
+                      className="case-popup-source"
+                      href={ev.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      Source ↗
+                    </a>
+                  )}
+                </div>
+              </Popup>
+            </CircleMarker>
+          );
+        })}
+      </LayerGroup>
+
+      {/* Labels above everything else. */}
+      <Pane name="labels" style={{ zIndex: 650, pointerEvents: "none" }}>
+        <TileLayer url={TILE_LABELS} noWrap />
+      </Pane>
     </MapContainer>
   );
 }
