@@ -451,10 +451,10 @@ function SourceRow({
       ? "Empty fetch"
       : "Healthy";
   const stateColor = !health.ok
-    ? "text-[color:var(--hot)]"
+    ? "text-hot"
     : empty
-      ? "text-[color:var(--warn)]"
-      : "text-[color:var(--ok)]";
+      ? "text-warn"
+      : "text-ok";
 
   return (
     <li className="rounded-md ring-1 ring-inset ring-border bg-white/2 px-2.5 py-2">
