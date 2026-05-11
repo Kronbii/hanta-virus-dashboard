@@ -25,7 +25,7 @@ export function LiveMap({ countries, events }: Props) {
         colorRamp={RAMP}
         emptyColor="#0e1a2c"
         borderColor="#22324e"
-        hoverColor="#f6a623"
+        hoverColor="#C800DF"
       />
       {/* radial glow overlay to lift hot-zones visually */}
       <div
