@@ -136,6 +136,36 @@ body {
   color: var(--fg);
 }
 
+/* Tailwind v4 preflight forces `img { display: block; max-width: 100%;
+   height: auto; }` and `svg { display: block }`, both of which corrupt
+   Leaflet's manually-positioned tile + marker layers. Restore the values
+   Leaflet's own stylesheet expects inside the map container. */
+.choropleth .leaflet-container img,
+.choropleth .leaflet-container svg {
+  max-width: none;
+  max-height: none;
+  height: auto;
+  width: auto;
+  display: block;
+}
+
+.choropleth .leaflet-tile-container img.leaflet-tile {
+  width: 256px;
+  height: 256px;
+}
+
+.choropleth .leaflet-pane svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.choropleth .leaflet-pane svg path {
+  pointer-events: visiblePainted;
+}
+
 /* Zoom control — restyle the squared rounded box to match our rules. */
 .choropleth .leaflet-bar {
   border: 1px solid var(--rule);
