@@ -18,6 +18,7 @@ import { Delta } from "./right-panel/Delta";
 import { StatusInline } from "./right-panel/StatusInline";
 import { MiniKpi } from "./right-panel/MiniKpi";
 import { SourceRow } from "./right-panel/SourceRow";
+import { DAY_MS, buildSparkData, countWithin, formatPct } from "./right-panel/stats";
 import { STATUS_TINT } from "./utils";
 import type {
   CountryAggregate,
@@ -42,46 +43,6 @@ interface Props {
   now: number;
 }
 
-const DAY = 24 * 60 * 60 * 1000;
-
-function buildSparkData(events: CaseEvent[], now: number): number[] {
-  const buckets = new Array(14).fill(0);
-  for (const ev of events) {
-    const t = ev.onset ? Date.parse(ev.onset) : NaN;
-    if (!Number.isFinite(t)) continue;
-    const diff = now - t;
-    const idx = 13 - Math.floor(diff / DAY);
-    if (idx >= 0 && idx < 14) buckets[idx]++;
-  }
-  return buckets;
-}
-
-function countWithin(
-  events: CaseEvent[],
-  field: "onset" | "death",
-  now: number,
-  windowMs: number,
-  predicate?: (e: CaseEvent) => boolean,
-): number {
-  let n = 0;
-  for (const ev of events) {
-    if (predicate && !predicate(ev)) continue;
-    const raw = ev[field];
-    if (!raw) continue;
-    const t = Date.parse(raw);
-    if (!Number.isFinite(t)) continue;
-    if (now - t <= windowMs && now - t >= 0) n++;
-  }
-  return n;
-}
-
-function formatPct(x: number): string {
-  if (!Number.isFinite(x) || x <= 0) return "0%";
-  const pct = x * 100;
-  if (pct < 10) return `${pct.toFixed(1)}%`;
-  return `${pct.toFixed(0)}%`;
-}
-
 export function RightPanel({
   totalCases,
   fatalities,
@@ -104,12 +65,12 @@ export function RightPanel({
   const peakValue = Math.max(0, ...spark);
   const peakIndex = spark.indexOf(peakValue);
 
-  const newCases24h = countWithin(events, "onset", now, DAY);
+  const newCases24h = countWithin(events, "onset", now, DAY_MS);
   const newFatal24h = countWithin(
     events,
     "death",
     now,
-    DAY,
+    DAY_MS,
     (e) => e.status === "DECEASED",
   );
 
