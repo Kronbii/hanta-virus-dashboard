@@ -17,8 +17,8 @@ export function Sparkline({
 
   const points = data.map((v, i) => {
     const x = i * stepX;
-    const y = height - (v / max) * (height - 4) - 2;
-    return [x, y] as const;
+    const y = height - (v / max) * (height - 12) - 8;
+    return [x, y, v] as const;
   });
 
   const linePath = points
