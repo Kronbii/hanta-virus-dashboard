@@ -94,7 +94,7 @@ export function TopBar({ trackedCount, view, query }: Props) {
             onChange={(e) => setDraftQuery(e.target.value)}
             placeholder="Filter region, exposure group, case label…"
             aria-label="Filter case events"
-            className="h-7 pl-7 text-xs bg-white/[0.04] border-border placeholder:text-muted-foreground/80"
+            className="h-7 pl-7 text-xs bg-white/4 border-border placeholder:text-muted-foreground/80"
           />
         </div>
       </div>
@@ -140,7 +140,7 @@ export function TopBar({ trackedCount, view, query }: Props) {
           </div>
 
           <Tabs value={view} onValueChange={(v) => setView(String(v))}>
-            <TabsList className="h-9 bg-white/[0.04] p-0.5 gap-0.5 w-full">
+            <TabsList className="h-9 bg-white/4 p-0.5 gap-0.5 w-full">
               <TabsTrigger
                 value="live"
                 className="flex-1 h-8 text-[11px] uppercase tracking-widest gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-foreground rounded-[3px]"
@@ -163,7 +163,7 @@ export function TopBar({ trackedCount, view, query }: Props) {
               onChange={(e) => setDraftQuery(e.target.value)}
               placeholder="Filter region, exposure group…"
               aria-label="Filter case events"
-              className="h-10 pl-8 text-sm bg-white/[0.04] border-border placeholder:text-muted-foreground/80"
+              className="h-10 pl-8 text-sm bg-white/4 border-border placeholder:text-muted-foreground/80"
             />
           </div>
         </div>
