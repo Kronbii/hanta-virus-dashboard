@@ -55,7 +55,7 @@ export function TopBar({ trackedCount, view, query }: Props) {
   };
 
   return (
-    <header className="absolute inset-x-0 top-0 z-40 flex h-12 items-center gap-2 md:gap-4 border-b border-border bg-gradient-to-b from-[#080e1a]/95 to-[#080e1a]/70 px-3 md:px-4 backdrop-blur">
+    <header className="absolute inset-x-0 top-0 z-40 flex h-12 items-center gap-2 md:gap-4 border-b border-border bg-linear-to-b from-[#080e1a]/95 to-[#080e1a]/70 px-3 md:px-4 backdrop-blur">
       <div className="flex items-center gap-2.5 text-[12px] md:text-[13px] font-bold tracking-[0.14em] uppercase">
         <span className="relative inline-flex h-2 w-2 items-center justify-center">
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#e23b3b] opacity-75" />
