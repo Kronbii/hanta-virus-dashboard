@@ -176,7 +176,7 @@ export function RightPanel({
           <CardContent className="px-3.5 py-0">
             <div className="flex items-baseline justify-between">
               <div className="flex flex-col gap-0.5">
-                <span className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--brand)] font-semibold">
+                <span className="text-[10px] uppercase tracking-[0.18em] text-brand font-semibold">
                   Total cases
                 </span>
                 <NumberTicker
@@ -295,7 +295,7 @@ export function RightPanel({
                       aria-pressed={active}
                       className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-3 rounded-[3px] px-1.5 py-1.5 text-left text-[11.5px] transition-colors hover:bg-white/[0.04] focus-visible:bg-white/[0.06] focus-visible:outline-none min-h-[36px] ${
                         active
-                          ? "bg-[color:var(--brand)]/15 text-[color:var(--brand)]"
+                          ? "bg-[color:var(--brand)]/15 text-brand"
                           : ""
                       }`}
                     >
@@ -415,7 +415,7 @@ function MiniKpi({
       </div>
       <div
         className={`mt-1 text-[20px] font-bold leading-none tabular-nums font-sans ${
-          accent ? "text-[color:var(--brand)]" : "text-foreground"
+          accent ? "text-brand" : "text-foreground"
         }`}
       >
         {value}
