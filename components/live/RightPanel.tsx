@@ -406,7 +406,7 @@ function MiniKpi({
       <div className="flex items-center gap-1.5">
         <span
           aria-hidden
-          className="inline-block size-1.5 rounded-full flex-shrink-0"
+          className="inline-block size-1.5 rounded-full shrink-0"
           style={{ background: tint }}
         />
         <span className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground truncate">
@@ -462,7 +462,7 @@ function SourceRow({
         <div className="flex items-center gap-2 min-w-0">
           <span
             aria-hidden
-            className="inline-block size-2 rounded-full flex-shrink-0"
+            className="inline-block size-2 rounded-full shrink-0"
             style={{ background: dotColor }}
           />
           <span className="text-[13px] font-semibold text-foreground truncate">
@@ -470,7 +470,7 @@ function SourceRow({
           </span>
         </div>
         <span
-          className={`text-[10px] uppercase tracking-[0.14em] font-mono font-semibold flex-shrink-0 ${stateColor}`}
+          className={`text-[10px] uppercase tracking-[0.14em] font-mono font-semibold shrink-0 ${stateColor}`}
         >
           {stateLabel}
         </span>
