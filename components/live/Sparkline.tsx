@@ -7,7 +7,7 @@ interface Props {
 
 export function Sparkline({
   data,
-  height = 44,
+  height = 56,
   color = "#C800DF",
   peakIndex,
 }: Props) {
