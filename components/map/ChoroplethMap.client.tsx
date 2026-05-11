@@ -315,10 +315,15 @@ export function ChoroplethMap({
       style={{ height: "100%", width: "100%" }}
     >
       <ResizeOnMount />
-      <FitToEvents events={events} />
+      <FitToEvents
+        events={events}
+        feedVisible={feedVisible}
+        panelVisible={panelVisible}
+      />
+      <MapBackgroundClickClear onClear={onClearCountry} />
 
-      {/* Dark base: land only. */}
-      <TileLayer url={TILE_LAND} attribution={TILE_ATTRIBUTION} noWrap />
+      {/* Dark base: land only. Tiles repeat across world copies. */}
+      <TileLayer url={TILE_LAND} attribution={TILE_ATTRIBUTION} />
 
       {/* Subtle choropleth — country shading under the markers. */}
       <GeoJSON
