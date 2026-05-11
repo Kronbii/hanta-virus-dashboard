@@ -37,8 +37,6 @@ interface Props {
   countryRollup: CountryAggregate[];
   events: CaseEvent[];
   now: number;
-  /** "show" forces visible, "hide" forces hidden, "auto" = desktop visible / mobile hidden. */
-  mode: "show" | "hide" | "auto";
 }
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -115,8 +113,8 @@ export function RightPanel({
   countryRollup,
   events,
   now,
-  mode,
 }: Props) {
+  const { panel: mode } = useUiState();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
