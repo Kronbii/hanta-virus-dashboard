@@ -264,7 +264,12 @@ export function ChoroplethMap({
     if (!country || !iso3) return;
     const path = layer as L.Path;
     layer.on({
-      click: () => closuresRef.current.onSelect(iso3),
+      click: (e) => {
+        // Stop propagation so MapBackgroundClickClear doesn't fire and
+        // immediately clear the country we just selected.
+        L.DomEvent.stopPropagation(e as unknown as Event);
+        closuresRef.current.onSelect(iso3);
+      },
       mouseover: () => {
         path.setStyle({ weight: 1.5, color: effectiveHover, fillOpacity: 0.7 });
         path.bringToFront();
