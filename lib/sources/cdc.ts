@@ -19,9 +19,11 @@ function extractUsTotal(text: string): { count: number; asOf?: string } | undefi
   if (!Number.isFinite(count) || count <= 0) return undefined;
   // Look for an "As of <date>" prefix nearby
   const dateMatch = text.match(/As of\s+([A-Z][a-z]+ \d{1,2},\s*\d{4})/);
-  const asOf = dateMatch
-    ? new Date(dateMatch[1]).toISOString()
-    : undefined;
+  let asOf: string | undefined;
+  if (dateMatch) {
+    const d = new Date(dateMatch[1]);
+    if (Number.isFinite(d.getTime())) asOf = d.toISOString();
+  }
   return { count, asOf };
 }
 

@@ -138,6 +138,9 @@ export function ChoroplethMap({
   // Live-tracker palette — navy borders, amber hover.
   const effectiveBorder = borderColor ?? "#22324e";
   const effectiveHover = hoverColor ?? "#f6a623";
+  // Treat ?country=ISO3 as the live highlight when no explicit prop is supplied.
+  const effectiveHighlight =
+    highlightIso3 ?? searchParams?.get("country") ?? undefined;
 
   const byIso3 = useMemo(() => {
     const m = new Map<string, CountryAggregate>();
@@ -165,8 +168,8 @@ export function ChoroplethMap({
   };
 
   // Closures-via-ref so onEachFeature (bound once per feature) sees latest data.
-  const closuresRef = useRef({ byIso3, colorScale, highlightIso3, onSelect });
-  closuresRef.current = { byIso3, colorScale, highlightIso3, onSelect };
+  const closuresRef = useRef({ byIso3, colorScale, highlightIso3: effectiveHighlight, onSelect });
+  closuresRef.current = { byIso3, colorScale, highlightIso3: effectiveHighlight, onSelect };
 
   const baseStyleFor = (
     feature: Feature<Geometry, unknown> | undefined,
@@ -230,7 +233,7 @@ export function ChoroplethMap({
 
   // Re-key the GeoJSON layer when its data or highlight changes so style
   // closures re-bind cleanly.
-  const geoKey = `${data.length}-${highlightIso3 ?? ""}`;
+  const geoKey = `${data.length}-${effectiveHighlight ?? ""}`;
 
   return (
     <MapContainer

@@ -40,11 +40,13 @@ export default function GlobalError({
             <RotateCcw className="size-3.5" />
             Retry
           </Button>
-          <Button asChild variant="outline" className="gap-1.5">
-            <Link href="/">
-              <Home className="size-3.5" />
-              Home
-            </Link>
+          <Button
+            render={<Link href="/" />}
+            variant="outline"
+            className="gap-1.5"
+          >
+            <Home className="size-3.5" />
+            Home
           </Button>
         </div>
       </div>

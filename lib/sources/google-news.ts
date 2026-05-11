@@ -55,17 +55,16 @@ function itemToNewsItem(it: RssItem): NewsItem | null {
   if (!link || !rawTitle) return null;
   const fallback = getSourceName(it.source);
   const { title, publisher } = splitTitle(rawTitle, fallback);
-  const published =
-    it.pubDate && !Number.isNaN(new Date(it.pubDate).getTime())
-      ? new Date(it.pubDate).toISOString()
-      : new Date().toISOString();
+  if (!it.pubDate) return null;
+  const t = new Date(it.pubDate).getTime();
+  if (!Number.isFinite(t)) return null;
   return {
     id: sha1(link),
     title,
     url: link,
     publisher,
     source: "GOOGLE_NEWS",
-    publishedAt: published,
+    publishedAt: new Date(t).toISOString(),
   };
 }
 

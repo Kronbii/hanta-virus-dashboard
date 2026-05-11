@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 import { sha1 } from "@/lib/aggregator/sha1";
-import { nameToIso3 } from "@/lib/aggregator/country-codes";
+import { nameToIso3, iso3ToName } from "@/lib/aggregator/country-codes";
 import { UA } from "./user-agent";
 import { ok, fail, type SourceFetchResult } from "./result";
 import type { CaseRecord, ISO3 } from "@/lib/types";
@@ -93,7 +93,6 @@ function parseReport(title: string, body: string): ParsedReport {
   // and keep those that appear at least twice (filtering out passing
   // references like transit waypoints). For the cruise-cluster style DON
   // this captures the affected jurisdictions reasonably well.
-  const lowered = text.toLowerCase();
   const mentionCounts = new Map<ISO3, number>();
   // Walk all capitalized multi-word phrases up to 4 words, test each as a name.
   const candidateRe = /\b[A-Z][A-Za-z'’\-]+(?:\s+(?:of\s+|and\s+|the\s+)?[A-Z][A-Za-z'’\-]+){0,3}\b/g;
@@ -107,13 +106,6 @@ function parseReport(title: string, body: string): ParsedReport {
     // Single passing reference → skip. Two or more → include.
     if (count >= 2) out.countries.add(iso3);
   }
-  // Suppress the common "in <country>" rest-of-world reference that just sets
-  // context (e.g., "where the disease is enzootic in Argentina, Chile and
-  // Uruguay" — already covered when those countries are also mentioned
-  // earlier in the DON as case sites, but for one-off references to a single
-  // country in an epidemiology paragraph we don't want to record a case).
-  // Keep the filter generous: presence is enough since we already required ≥2.
-  void lowered;
   return out;
 }
 
@@ -150,7 +142,7 @@ export async function fetchWhoDon(): Promise<SourceFetchResult<CaseRecord>> {
         records.push({
           id: sha1(`WHO_DON|${iso3}|${e.PublicationDate}|${e.Id}`),
           countryIso3: iso3,
-          countryName: iso3,
+          countryName: iso3ToName(iso3),
           count,
           period: "cumulative",
           dateReported: e.PublicationDate,
@@ -165,7 +157,7 @@ export async function fetchWhoDon(): Promise<SourceFetchResult<CaseRecord>> {
         records.push({
           id: sha1(`WHO_DON|${iso3}|${e.PublicationDate}|${e.Id}|cluster`),
           countryIso3: iso3,
-          countryName: iso3,
+          countryName: iso3ToName(iso3),
           count: 1,
           period: "event",
           dateReported: e.PublicationDate,
@@ -190,7 +182,7 @@ export async function fetchWhoDon(): Promise<SourceFetchResult<CaseRecord>> {
       records.push({
         id: sha1(`WHO_DON|${iso3}|${e.PublicationDate}|${e.Id}|${period}`),
         countryIso3: iso3,
-        countryName: iso3,
+        countryName: iso3ToName(iso3),
         count: perCountry,
         period,
         dateReported: e.PublicationDate,
