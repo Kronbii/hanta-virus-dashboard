@@ -89,7 +89,15 @@ function ResizeOnMount() {
  * pins never end up hidden behind the floating panels. Caps zoom so a tight
  * cluster doesn't fly the user out of the global context.
  */
-function FitToEvents({ events }: { events: CaseEvent[] }) {
+function FitToEvents({
+  events,
+  feedVisible = true,
+  panelVisible = true,
+}: {
+  events: CaseEvent[];
+  feedVisible?: boolean;
+  panelVisible?: boolean;
+}) {
   const map = useMap();
   const didFit = useRef(false);
   useEffect(() => {
@@ -99,14 +107,29 @@ function FitToEvents({ events }: { events: CaseEvent[] }) {
       (e) => [e.coordinates[1], e.coordinates[0]] as [number, number],
     );
     const bounds = L.latLngBounds(points);
+    const isMobile =
+      typeof window !== "undefined" && window.innerWidth < 768;
     map.fitBounds(bounds, {
-      paddingTopLeft: [392, 80],
-      paddingBottomRight: [352, 72],
+      paddingTopLeft: [isMobile ? 16 : feedVisible ? 392 : 32, 80],
+      paddingBottomRight: [isMobile ? 16 : panelVisible ? 352 : 32, 72],
       maxZoom: 3,
       animate: false,
     });
     didFit.current = true;
-  }, [events, map]);
+  }, [events, map, feedVisible, panelVisible]);
+  return null;
+}
+
+/**
+ * Clears `?country=` when the user clicks anywhere on the map background
+ * (ocean / land outside any rendered country polygon). Country polygon
+ * clicks stop propagation in their own handler, so this only fires for
+ * genuine background clicks.
+ */
+function MapBackgroundClickClear({ onClear }: { onClear: () => void }) {
+  useMapEvents({
+    click: () => onClear(),
+  });
   return null;
 }
 
