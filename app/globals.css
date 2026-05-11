@@ -297,6 +297,20 @@ body {
 .live-map .leaflet-bar a:last-child { border-bottom: none; }
 .live-map .leaflet-bar a:hover { background: rgba(255, 255, 255, 0.05); color: var(--brand); }
 
+/* Crosshair on the map background, magenta crosshair over selectable
+   features so the cursor itself signals "you can click this." */
+.live-map .leaflet-grab,
+.live-map .leaflet-dragging .leaflet-grab,
+.live-map .leaflet-container.leaflet-dragging,
+.live-map .leaflet-container {
+  cursor: crosshair;
+}
+.live-map .leaflet-interactive {
+  cursor:
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23C800DF" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="9"/><line x1="12" y1="15" x2="12" y2="22"/><line x1="2" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2" fill="%23C800DF"/></svg>') 12 12,
+    crosshair;
+}
+
 .live-map .leaflet-control-attribution {
   background: rgba(8, 14, 26, 0.85);
   color: var(--mut);
