@@ -15,7 +15,7 @@ export const STATUS_TINT: Record<CaseEventStatus, string> = {
 export const STATUS_INK: Record<CaseEventStatus, string> = {
   DECEASED: "#ffffff",
   CONFIRMED: "#1a0e00",
-  PROBABLE: "#001824",
+  PROBABLE: "#0b1220",
   SUSPECTED: "#0b1220",
   MONITORING: "#0b1220",
   RECOVERED: "#031a07",
