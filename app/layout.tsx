@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Jost, Overpass_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,14 @@ export const metadata: Metadata = {
   title: "Hantawatch — live OSINT situation board",
   description:
     "Live worldwide hantavirus tracker. Aggregated from WHO Disease Outbreak News, the U.S. CDC, ArcGIS Hondius case tracker, GDELT 2.0, and Google News.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#0a0612",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
