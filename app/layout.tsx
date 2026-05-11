@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { Inter_Tight, Geist } from "next/font/google";
+import { Jost } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-const body = Inter_Tight({
+// Trimmed weight set — three weights for hierarchy, one for the headline.
+const body = Jost({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600", "800"],
   variable: "--font-body",
   display: "swap",
 });
@@ -22,7 +21,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={cn("h-full", "antialiased", "dark", body.variable, "font-sans", geist.variable)}>
+    <html lang="en" className={cn("h-full", "antialiased", "dark", body.variable, "font-sans")}>
       <body className="min-h-full">{children}</body>
     </html>
   );
