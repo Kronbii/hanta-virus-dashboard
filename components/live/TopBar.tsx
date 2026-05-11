@@ -67,7 +67,7 @@ export function TopBar({ trackedCount, view, query }: Props) {
         </span>
       </div>
 
-      <Separator orientation="vertical" className="!h-5 hidden md:block" />
+      <Separator orientation="vertical" className="h-5! hidden md:block" />
 
       <div className="hidden md:flex md:items-center md:gap-4 md:flex-1 md:min-w-0">
         <Tabs value={view} onValueChange={(v) => setView(String(v))}>
