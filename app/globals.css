@@ -355,7 +355,7 @@ body {
 
 .live-map .leaflet-interactive:focus-visible {
   outline: none;
-  stroke: var(--warn);
+  stroke: var(--brand);
   stroke-width: 1.5;
 }
 
