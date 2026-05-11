@@ -68,7 +68,7 @@ function Cell({
       </div>
       <div
         className={`mt-0.5 text-[22px] font-extrabold leading-none tabular-nums font-sans ${
-          accent ? "text-[color:var(--brand)]" : "text-foreground"
+          accent ? "text-brand" : "text-foreground"
         }`}
       >
         {value}
