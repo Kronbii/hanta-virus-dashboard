@@ -24,15 +24,9 @@ const StatusIcon: Record<CaseEventStatus, React.ComponentType<{ className?: stri
   UNKNOWN: HelpCircle,
 };
 
-export function EventFeed({ events, totalCases, now, mode }: Props) {
-  const visClass =
-    mode === "show" ? "flex" : mode === "hide" ? "hidden" : "hidden md:flex";
-  const containerClass = `${visClass} fixed z-30 flex-col overflow-hidden border border-border bg-[rgba(10,18,32,0.92)] md:bg-[rgba(10,18,32,0.78)] shadow-[0_20px_40px_rgba(0,0,0,0.5)] backdrop-blur-md
-    inset-x-2 bottom-2 top-14 max-h-[calc(100vh-3.5rem-1rem)] rounded-t-2xl rounded-b-md
-    md:inset-x-auto md:left-4 md:top-16 md:bottom-14 md:max-h-none md:w-[360px] md:rounded-md`;
-
+export function EventFeed({ events, totalCases, now }: Props) {
   return (
-    <aside className={containerClass} aria-label="Case events">
+    <>
       <header className="flex items-center justify-between gap-2 px-3.5 py-2.5 border-b border-border text-[11px] uppercase tracking-[0.14em]">
         <span className="font-medium">Case events</span>
         <div className="flex items-center gap-2">
@@ -117,6 +111,6 @@ export function EventFeed({ events, totalCases, now, mode }: Props) {
           })
         )}
       </ScrollArea>
-    </aside>
+    </>
   );
 }
