@@ -6,6 +6,8 @@ interface SearchParams {
   country?: string;
   q?: string;
   view?: string;
+  feed?: string;
+  panel?: string;
 }
 
 interface PageProps {
