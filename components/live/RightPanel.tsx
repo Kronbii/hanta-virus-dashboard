@@ -457,7 +457,7 @@ function SourceRow({
       : "text-[color:var(--ok)]";
 
   return (
-    <li className="rounded-md ring-1 ring-inset ring-border bg-white/[0.02] px-2.5 py-2">
+    <li className="rounded-md ring-1 ring-inset ring-border bg-white/2 px-2.5 py-2">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <span
