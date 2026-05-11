@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import L, { type PathOptions } from "leaflet";
 import {
@@ -12,6 +12,7 @@ import {
   Pane,
   LayerGroup,
   useMap,
+  useMapEvents,
 } from "react-leaflet";
 import { scaleQuantize } from "d3-scale";
 import type { Feature, Geometry } from "geojson";
