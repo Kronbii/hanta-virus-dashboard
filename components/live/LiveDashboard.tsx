@@ -18,9 +18,9 @@ export interface DashboardFilters {
   panel?: string; // "show" | "hide" — overrides viewport default
 }
 
-// Statuses we treat as "an actual case" for the rollup KPI. MONITORING is
-// "exposed but no signs of illness" — counting it inflates the headline
-// number well past anything WHO or CDC would publish.
+// Statuses we treat as "an actual case" for the headline. PROBABLE is
+// rolled into SUSPECTED at presentation time; MONITORING / RECOVERED /
+// UNKNOWN are excluded as they aren't part of an active outbreak count.
 const ACTIVE_STATUSES = new Set([
   "CONFIRMED",
   "PROBABLE",
