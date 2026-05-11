@@ -72,7 +72,7 @@ export function EventFeed({ events, totalCases, now }: Props) {
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
                       <Badge
-                        className="rounded-[2px] px-1.5 py-px text-[9px] font-bold tracking-[0.14em] border-transparent"
+                        className="rounded-xs px-1.5 py-px text-[9px] font-bold tracking-[0.14em] border-transparent"
                         style={{ background: tint, color: ink }}
                       >
                         {STATUS_LABEL[ev.status]}
@@ -93,7 +93,7 @@ export function EventFeed({ events, totalCases, now }: Props) {
                       {eventHeadline(ev)}
                     </h4>
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground">
-                      <Badge variant="outline" className="rounded-[2px] px-1.5 py-0 text-[9px] font-normal uppercase tracking-[0.12em] border-border text-foreground">
+                      <Badge variant="outline" className="rounded-xs px-1.5 py-0 text-[9px] font-normal uppercase tracking-[0.12em] border-border text-foreground">
                         ARCGIS
                       </Badge>
                       {ev.exposureGroup && (
