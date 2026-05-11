@@ -1,6 +1,5 @@
 import { ChoroplethMap } from "@/components/map/ChoroplethMap";
-import { Legend } from "@/components/map/Legend";
-import type { CountryAggregate } from "@/lib/types";
+import type { CaseEvent, CountryAggregate } from "@/lib/types";
 
 const RAMP: [string, string, string, string, string] = [
   "#F2D6CB",
@@ -12,38 +11,47 @@ const RAMP: [string, string, string, string, string] = [
 
 interface Props {
   countries: CountryAggregate[];
+  events: CaseEvent[];
   highlightIso3?: string;
 }
 
-export function MapSection({ countries, highlightIso3 }: Props) {
-  const max = countries.reduce(
-    (acc, c) => (c.totalCases > acc ? c.totalCases : acc),
-    0,
-  );
+export function MapSection({ countries, events, highlightIso3 }: Props) {
+  const hasMapContent = countries.length > 0 || events.length > 0;
 
   return (
     <section className="mx-auto max-w-6xl px-6 pb-12 sm:px-10">
       <div className="flex items-end justify-between border-b rule pb-3">
-        <h2 className="serif text-2xl font-medium">A world view</h2>
-        {max > 0 && <Legend ramp={RAMP} max={max} label="Cases" />}
+        <div>
+          <div
+            className="text-xs uppercase tracking-[0.2em]"
+            style={{ color: "var(--accent)" }}
+          >
+            Live tracker
+          </div>
+          <h2 className="serif mt-1 text-2xl font-medium">Outbreak map</h2>
+        </div>
+        <p className="serif hidden text-sm italic sm:block" style={{ color: "var(--muted)" }}>
+          {events.length.toLocaleString()} tracked cases · drag, scroll to zoom
+        </p>
       </div>
 
       <div
         className="mt-6 rounded-sm p-1 sm:p-2"
         style={{ background: "var(--paper)", color: "var(--fg)" }}
       >
-        {countries.length === 0 ? (
+        {!hasMapContent ? (
           <p
             className="serif py-24 text-center text-sm italic"
             style={{ color: "var(--muted)" }}
           >
-            No country totals available — sources may be temporarily
-            unreachable.
+            No country totals or live cases available — sources may be
+            temporarily unreachable.
           </p>
         ) : (
           <div className="choropleth">
             <ChoroplethMap
               data={countries}
+              events={events}
               colorRamp={RAMP}
               emptyColor="var(--bg)"
               highlightIso3={highlightIso3}
@@ -58,7 +66,9 @@ export function MapSection({ countries, highlightIso3 }: Props) {
           className="serif text-sm italic"
           style={{ color: "var(--muted)" }}
         >
-          Drag to pan · scroll to zoom · click a country to filter the news feed.
+          Each pin is one individual case from the MV Hondius cluster, colored
+          by status. Country shading reflects cumulative totals across WHO and
+          CDC feeds. Click a country to filter the news feed.
         </p>
         <p
           className="text-xs uppercase tracking-wider"

@@ -5,12 +5,25 @@ interface Props {
   totalCases: number;
   countries: number;
   lastUpdated: string | null;
+  liveCases?: number;
+  deceased?: number;
 }
 
-export function Stats({ totalCases, countries, lastUpdated }: Props) {
+export function Stats({
+  totalCases,
+  countries,
+  lastUpdated,
+  liveCases = 0,
+  deceased = 0,
+}: Props) {
+  const showEventCols = liveCases > 0 || deceased > 0;
   return (
     <section className="mx-auto max-w-6xl px-6 py-10 sm:px-10">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+      <div
+        className={`grid grid-cols-2 gap-6 sm:grid-cols-3 ${
+          showEventCols ? "lg:grid-cols-5" : ""
+        }`}
+      >
         <Stat
           label="Reported cases"
           valueNode={
@@ -19,7 +32,7 @@ export function Stats({ totalCases, countries, lastUpdated }: Props) {
               className="serif text-5xl font-medium tabular-nums"
             />
           }
-          sublabel="cumulative, across all sources"
+          sublabel="cumulative, all sources"
         />
         <Stat
           label="Countries with reports"
@@ -32,9 +45,33 @@ export function Stats({ totalCases, countries, lastUpdated }: Props) {
           sublabel={
             countries === 0
               ? "no integrated data yet"
-              : "from current integrated feeds"
+              : "from current feeds"
           }
         />
+        {showEventCols && (
+          <Stat
+            label="Live tracked cases"
+            valueNode={
+              <CountUp
+                value={liveCases}
+                className="serif text-5xl font-medium tabular-nums"
+              />
+            }
+            sublabel="MV Hondius cluster"
+          />
+        )}
+        {showEventCols && (
+          <Stat
+            label="Confirmed deaths"
+            valueNode={
+              <CountUp
+                value={deceased}
+                className="serif text-5xl font-medium tabular-nums"
+              />
+            }
+            sublabel="among tracked cases"
+          />
+        )}
         <Stat
           label="Last update"
           valueNode={

@@ -1,4 +1,5 @@
 import { aggregateCases } from "@/lib/aggregator/cases";
+import { aggregateCaseEvents } from "@/lib/aggregator/case-events";
 import { aggregateNews } from "@/lib/aggregator/news";
 import { Stats } from "./Stats";
 import { MapSection } from "./MapSection";
@@ -22,8 +23,9 @@ export async function DataPanel({ searchParamsPromise }: Props) {
   const params = await searchParamsPromise;
   const filterIso3 = pickCountry(params.country);
 
-  const [casesResult, newsResult] = await Promise.all([
+  const [casesResult, eventsResult, newsResult] = await Promise.all([
     aggregateCases(),
+    aggregateCaseEvents(),
     aggregateNews(filterIso3),
   ]);
 
@@ -42,9 +44,12 @@ export async function DataPanel({ searchParamsPromise }: Props) {
         totalCases={totalCases}
         countries={casesResult.countries.length}
         lastUpdated={lastUpdated}
+        liveCases={eventsResult.events.length}
+        deceased={eventsResult.events.filter((e) => e.status === "DECEASED").length}
       />
       <MapSection
         countries={casesResult.countries}
+        events={eventsResult.events}
         highlightIso3={filterIso3}
       />
       <section className="mx-auto grid max-w-6xl grid-cols-1 gap-12 px-6 pb-16 sm:px-10 lg:grid-cols-[1fr_1.2fr]">
@@ -67,7 +72,11 @@ export async function DataPanel({ searchParamsPromise }: Props) {
         </div>
       </section>
       <SourceCitations
-        health={[...casesResult.health, ...newsResult.health]}
+        health={[
+          ...casesResult.health,
+          ...eventsResult.health,
+          ...newsResult.health,
+        ]}
       />
     </>
   );
