@@ -35,6 +35,12 @@ const SOURCE_META: Record<AnySource, { label: string; description: string; url: 
     description: "Headline coverage from the public Google News RSS feed.",
     url: "https://news.google.com/rss/search?q=hantavirus",
   },
+  ARCGIS_HONDIUS: {
+    label: "ANDV Hantavirus 2026 (ArcGIS)",
+    description:
+      "Community-curated per-case point tracker for the MV Hondius cluster, sourced from open public-health statements.",
+    url: "https://www.arcgis.com/apps/dashboards/5c68442d2afc42d7ba2696e4cd393729",
+  },
 };
 
 export function SourceCitations({ health }: Props) {
