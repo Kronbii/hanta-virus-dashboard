@@ -293,7 +293,7 @@ export function RightPanel({
                       type="button"
                       onClick={() => onPickCountry(c.iso3)}
                       aria-pressed={active}
-                      className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-3 rounded-[3px] px-1.5 py-1.5 text-left text-[11.5px] transition-colors hover:bg-white/[0.04] focus-visible:bg-white/[0.06] focus-visible:outline-none min-h-[36px] ${
+                      className={`grid w-full grid-cols-[1fr_auto] items-center gap-x-3 rounded-[3px] px-1.5 py-1.5 text-left text-[11.5px] transition-colors hover:bg-white/4 focus-visible:bg-white/[0.06] focus-visible:outline-none min-h-[36px] ${
                         active
                           ? "bg-[color:var(--brand)]/15 text-brand"
                           : ""
