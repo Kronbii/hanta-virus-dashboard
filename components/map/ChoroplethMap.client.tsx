@@ -306,11 +306,12 @@ export function ChoroplethMap({
       wheelPxPerZoomLevel={120}
       zoomControl
       attributionControl
+      // Latitude clamped, longitude free — worldCopyJump handles the wrap.
       maxBounds={[
-        [-85, -200],
-        [85, 200],
+        [-85, -720],
+        [85, 720],
       ]}
-      maxBoundsViscosity={1}
+      maxBoundsViscosity={0}
       style={{ height: "100%", width: "100%" }}
     >
       <ResizeOnMount />
