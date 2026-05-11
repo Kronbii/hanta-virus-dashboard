@@ -11,6 +11,8 @@ import { NewsTicker } from "./NewsTicker";
 import { LiveMap } from "./LiveMap";
 import { FeedOpenButton, PanelOpenButton } from "./PanelToggles";
 import { MobileStatsHud } from "./MobileStatsHud";
+import { UiStateProvider } from "./UiState";
+import { FeedShell } from "./FeedShell";
 
 export interface DashboardFilters {
   country?: string;
