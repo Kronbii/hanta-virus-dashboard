@@ -1,52 +1,142 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Editorial palette — promoted from /styles/editorial mockup.
-   ────────────────────────────────────────────────────────────────────────── */
+   Live-tracker palette — promoted from /styles/live-tracker mockup.
+   OSINT-style situation board. Dark-only.
+   ──────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --bg: #FAF7F2;        /* ivory */
-  --fg: #1A1714;        /* ink */
-  --muted: #6B5F55;
-  --rule: rgba(26, 23, 20, 0.16);
-  --paper: #FFFFFF;
-  --accent: #B5462B;    /* rust */
-  --accent-soft: rgba(181, 70, 43, 0.12);
-  --tooltip-bg: #FFFFFF;
-  --ok: #5C8A3F;
-  --warn: #C77E29;
-  --err: #A8323A;
-}
-
-.dark {
-  --bg: #161310;
-  --fg: #F2EDE4;
-  --muted: #B0A99E;
-  --rule: rgba(242, 237, 228, 0.16);
-  --paper: #1F1B16;
-  --accent: #D87A5F;
-  --accent-soft: rgba(216, 122, 95, 0.18);
-  --tooltip-bg: #1F1B16;
-  --ok: #8FB872;
-  --warn: #D9A155;
-  --err: #D9646C;
+  --bg: #0a1220;
+  --bg-2: #0e1a2c;
+  --panel: rgba(10, 18, 32, 0.78);
+  --panel-solid: #0f1a2e;
+  --border: rgba(140, 170, 220, 0.16);
+  --border-strong: rgba(140, 170, 220, 0.32);
+  --fg: #e6ecf5;
+  --mut: #8a99b3;
+  --dim: #5a6c87;
+  --hot: #e23b3b;
+  --warn: #f6a623;
+  --cool: #38bdf8;
+  --ok: #4ade80;
+  --neutral: #cbd5e1;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--fg);
-  --color-muted: var(--muted);
-  --color-rule: var(--rule);
-  --color-paper: var(--paper);
-  --color-accent: var(--accent);
-  --font-display: var(--font-display);
+  --color-muted: var(--mut);
+  --color-panel: var(--panel);
+  --color-border: var(--border);
+  --color-hot: var(--hot);
+  --color-warn: var(--warn);
+  --color-cool: var(--cool);
+  --color-ok: var(--ok);
   --font-body: var(--font-body);
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --animate-marquee: marquee var(--duration) infinite linear;
+  --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+    }
+  }
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
    Base
-   ────────────────────────────────────────────────────────────────────────── */
+   ──────────────────────────────────────────────────────────────────────── */
 
 *,
 *::before,
@@ -62,6 +152,7 @@ body {
 html {
   background: var(--bg);
   color: var(--fg);
+  color-scheme: dark;
 }
 
 body {
@@ -69,26 +160,16 @@ body {
   font-family: var(--font-body), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  letter-spacing: 0.005em;
+  overflow: hidden;
 }
-
-.serif {
-  font-family: var(--font-display), Georgia, serif;
-}
-
-.rule {
-  border-color: var(--rule);
-}
-
-/* ────────────────────────────────────────────────────────────────────────────
-   Accessibility
-   ────────────────────────────────────────────────────────────────────────── */
 
 :focus {
   outline: none;
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--warn);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -117,31 +198,51 @@ body {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Leaflet overrides — match the editorial palette.
-   ────────────────────────────────────────────────────────────────────────── */
+   Animations
+   ──────────────────────────────────────────────────────────────────────── */
 
-.choropleth {
-  position: relative;
-  height: 480px;
-  width: 100%;
-  overflow: hidden;
-  border-radius: 4px;
+@keyframes pulse-dot {
+  0%   { box-shadow: 0 0 0 0 rgba(226, 59, 59, 0.55); }
+  100% { box-shadow: 0 0 0 14px rgba(226, 59, 59, 0); }
 }
 
-.choropleth .leaflet-container {
+@keyframes blink {
+  50% { opacity: 0.2; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@keyframes ring-out {
+  0%   { transform: scale(0.5); opacity: 0.8; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Leaflet skin — live-tracker
+   ──────────────────────────────────────────────────────────────────────── */
+
+.live-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.live-map .leaflet-container {
   height: 100%;
   width: 100%;
-  background: var(--paper);
+  background: var(--bg);
   font-family: var(--font-body), system-ui, sans-serif;
   color: var(--fg);
 }
 
-/* Tailwind v4 preflight forces `img { display: block; max-width: 100%;
-   height: auto; }` and `svg { display: block }`, both of which corrupt
-   Leaflet's manually-positioned tile + marker layers. Restore the values
-   Leaflet's own stylesheet expects inside the map container. */
-.choropleth .leaflet-container img,
-.choropleth .leaflet-container svg {
+/* Tailwind v4 preflight forces `img/svg { display: block; ... }`, which corrupts
+   Leaflet's manually-positioned tile + marker layers. Restore inside the map. */
+.live-map .leaflet-container img,
+.live-map .leaflet-container svg {
   max-width: none;
   max-height: none;
   height: auto;
@@ -149,12 +250,12 @@ body {
   display: block;
 }
 
-.choropleth .leaflet-tile-container img.leaflet-tile {
+.live-map .leaflet-tile-container img.leaflet-tile {
   width: 256px;
   height: 256px;
 }
 
-.choropleth .leaflet-pane svg {
+.live-map .leaflet-pane svg {
   position: absolute;
   top: 0;
   left: 0;
@@ -162,106 +263,95 @@ body {
   height: 100%;
 }
 
-.choropleth .leaflet-pane svg path {
+.live-map .leaflet-pane svg path {
   pointer-events: visiblePainted;
 }
 
-/* Zoom control — restyle the squared rounded box to match our rules. */
-.choropleth .leaflet-bar {
-  border: 1px solid var(--rule);
-  box-shadow: none;
+/* Zoom control */
+.live-map .leaflet-bar {
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
   border-radius: 4px;
   overflow: hidden;
-  background: var(--paper);
+  background: var(--panel-solid);
 }
 
-.choropleth .leaflet-bar a {
-  background: var(--paper);
+.live-map .leaflet-bar a {
+  background: var(--panel-solid);
   color: var(--fg);
-  border-bottom: 1px solid var(--rule);
+  border-bottom: 1px solid var(--border);
   font-family: var(--font-body), system-ui, sans-serif;
 }
 
-.choropleth .leaflet-bar a:last-child {
-  border-bottom: none;
-}
+.live-map .leaflet-bar a:last-child { border-bottom: none; }
+.live-map .leaflet-bar a:hover { background: rgba(255, 255, 255, 0.05); color: var(--warn); }
 
-.choropleth .leaflet-bar a:hover {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-/* Attribution — small, low-contrast. */
-.choropleth .leaflet-control-attribution {
-  background: color-mix(in srgb, var(--paper) 85%, transparent);
-  color: var(--muted);
+.live-map .leaflet-control-attribution {
+  background: rgba(8, 14, 26, 0.85);
+  color: var(--mut);
   font-size: 10px;
   padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-right: none;
   border-top-left-radius: 4px;
 }
 
-.choropleth .leaflet-control-attribution a {
-  color: var(--accent);
-}
+.live-map .leaflet-control-attribution a { color: var(--cool); }
 
-/* Tooltip — editorial card with paper bg + rust top border. */
-.choropleth .leaflet-tooltip {
-  background: var(--tooltip-bg);
+/* Tooltip */
+.live-map .leaflet-tooltip {
+  background: var(--panel-solid);
   color: var(--fg);
-  border: 1px solid var(--rule);
-  border-top: 2px solid var(--accent);
-  border-radius: 2px;
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
   font-family: var(--font-body), system-ui, sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.4;
-  padding: 6px 9px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  padding: 5px 8px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
   white-space: nowrap;
+  letter-spacing: 0.02em;
 }
 
-.dark .choropleth .leaflet-tooltip {
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+.live-map .leaflet-tooltip strong {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--fg);
+  letter-spacing: 0;
 }
 
-.choropleth .leaflet-tooltip strong {
-  font-family: var(--font-display), Georgia, serif;
-  font-weight: 500;
-  font-size: 14px;
-  letter-spacing: -0.01em;
-}
-
-.choropleth .leaflet-tooltip-top:before,
-.choropleth .leaflet-tooltip-bottom:before,
-.choropleth .leaflet-tooltip-left:before,
-.choropleth .leaflet-tooltip-right:before {
+.live-map .leaflet-tooltip-top:before,
+.live-map .leaflet-tooltip-bottom:before,
+.live-map .leaflet-tooltip-left:before,
+.live-map .leaflet-tooltip-right:before {
   display: none;
 }
 
-/* Focus ring on focused geographies. */
-.choropleth .leaflet-interactive:focus-visible {
+.live-map .leaflet-interactive:focus-visible {
   outline: none;
-  stroke: var(--accent);
-  stroke-width: 2;
+  stroke: var(--warn);
+  stroke-width: 1.5;
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
    Case popups
-   ────────────────────────────────────────────────────────────────────────── */
+   ──────────────────────────────────────────────────────────────────────── */
 
-.choropleth .leaflet-popup-content-wrapper {
-  background: var(--paper);
+.live-map .leaflet-popup-content-wrapper {
+  background: var(--panel-solid);
   color: var(--fg);
   border-radius: 4px;
-  border: 1px solid var(--rule);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.55);
 }
 
-.choropleth .leaflet-popup-tip {
-  background: var(--paper);
-  border: 1px solid var(--rule);
+.live-map .leaflet-popup-tip {
+  background: var(--panel-solid);
+  border: 1px solid var(--border-strong);
 }
 
-.choropleth .leaflet-popup-content {
+.live-map .leaflet-popup-content {
   margin: 12px 14px;
   min-width: 220px;
   font-family: var(--font-body), system-ui, sans-serif;
@@ -270,47 +360,39 @@ body {
   color: var(--fg);
 }
 
-.case-popup-body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+.case-popup-body { display: flex; flex-direction: column; gap: 6px; }
 
 .case-popup-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em;
   color: var(--fg);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .case-popup-dot {
   display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.5);
 }
 
 .case-popup-label {
   font-weight: 400;
-  color: var(--muted);
+  color: var(--mut);
   letter-spacing: 0;
   text-transform: none;
 }
 
 .case-popup-loc {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: 16px;
-  letter-spacing: -0.01em;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
   line-height: 1.2;
+  color: var(--fg);
 }
 
 .case-popup-cohort {
   font-style: italic;
-  color: var(--muted);
+  color: var(--mut);
   font-size: 11px;
 }
 
@@ -323,7 +405,7 @@ body {
 }
 
 .case-popup-meta dt {
-  color: var(--muted);
+  color: var(--mut);
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
@@ -337,79 +419,74 @@ body {
 .case-popup-source {
   margin-top: 6px;
   display: inline-block;
-  font-size: 11px;
+  font-size: 10px;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--accent);
+  letter-spacing: 0.16em;
+  color: var(--cool);
   text-decoration: none;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--border);
   padding-top: 6px;
 }
 
-.case-popup-source:hover {
-  text-decoration: underline;
-}
+.case-popup-source:hover { color: var(--warn); }
 
 /* ────────────────────────────────────────────────────────────────────────────
-   Status legend overlay (positioned by the wrapper)
-   ────────────────────────────────────────────────────────────────────────── */
+   Scrollbars (dark, slim)
+   ──────────────────────────────────────────────────────────────────────── */
 
-.status-legend {
-  position: absolute;
-  z-index: 500;
-  left: 12px;
-  bottom: 12px;
-  background: color-mix(in srgb, #0A0A0A 92%, transparent);
-  color: #F2EDE4;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  padding: 10px 12px;
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  pointer-events: none;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+.scroll-y { overflow-y: auto; }
+.scroll-y::-webkit-scrollbar { width: 6px; height: 6px; }
+.scroll-y::-webkit-scrollbar-track { background: transparent; }
+.scroll-y::-webkit-scrollbar-thumb {
+  background: rgba(140, 170, 220, 0.18);
+  border-radius: 100px;
+}
+.scroll-y::-webkit-scrollbar-thumb:hover { background: rgba(140, 170, 220, 0.35); }
+
+/* Dark mode = default. shadcn tokens routed to live-tracker palette so
+   all shadcn primitives (Tabs, Card, Badge, Tooltip…) inherit the OSINT look. */
+.dark {
+  --background: #0a1220;
+  --foreground: #e6ecf5;
+  --card: #0f1a2e;
+  --card-foreground: #e6ecf5;
+  --popover: #0f1a2e;
+  --popover-foreground: #e6ecf5;
+  --primary: #f6a623;
+  --primary-foreground: #1a0e00;
+  --secondary: rgba(255, 255, 255, 0.05);
+  --secondary-foreground: #e6ecf5;
+  --muted: rgba(255, 255, 255, 0.04);
+  --muted-foreground: #8a99b3;
+  --accent: rgba(56, 189, 248, 0.12);
+  --accent-foreground: #38bdf8;
+  --destructive: #e23b3b;
+  --border: rgba(140, 170, 220, 0.16);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #f6a623;
+  --chart-1: #e23b3b;
+  --chart-2: #f6a623;
+  --chart-3: #38bdf8;
+  --chart-4: #4ade80;
+  --chart-5: #cbd5e1;
+  --sidebar: #0f1a2e;
+  --sidebar-foreground: #e6ecf5;
+  --sidebar-primary: #f6a623;
+  --sidebar-primary-foreground: #1a0e00;
+  --sidebar-accent: rgba(255, 255, 255, 0.05);
+  --sidebar-accent-foreground: #e6ecf5;
+  --sidebar-border: rgba(140, 170, 220, 0.16);
+  --sidebar-ring: #f6a623;
 }
 
-.status-legend-title {
-  font-family: var(--font-display), Georgia, serif;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
-  font-style: italic;
-  margin-bottom: 6px;
-  color: rgba(242, 237, 228, 0.85);
-}
-
-.status-legend ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 4px;
-}
-
-.status-legend li {
-  display: grid;
-  grid-template-columns: 12px 1fr auto;
-  gap: 8px;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.status-legend .swatch {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.5);
-}
-
-.status-legend .count {
-  font-family: var(--font-body), system-ui, sans-serif;
-  font-variant-numeric: tabular-nums;
-  font-size: 10px;
-  color: rgba(242, 237, 228, 0.75);
-  letter-spacing: 0;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }

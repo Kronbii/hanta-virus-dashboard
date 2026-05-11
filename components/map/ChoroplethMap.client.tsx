@@ -42,16 +42,16 @@ const TILE_LABELS =
 const TILE_ATTRIBUTION =
   '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>';
 
-// Status palette tuned to the editorial rust ramp (deep → light) so the
-// pins read as a severity gradient over the dark base.
+// Status palette — live-tracker / OSINT board. Hot red for fatal, amber for
+// confirmed, cyan for probable, slate for suspect, dim green for recovered.
 const STATUS_COLOR: Record<CaseEventStatus, string> = {
-  DECEASED: "#7A2F1C",
-  CONFIRMED: "#E63946",
-  PROBABLE: "#D17557",
-  SUSPECTED: "#D9A155",
-  MONITORING: "#C9B89E",
-  RECOVERED: "#5C8A3F",
-  UNKNOWN: "#6B5F55",
+  DECEASED: "#e23b3b",
+  CONFIRMED: "#f6a623",
+  PROBABLE: "#38bdf8",
+  SUSPECTED: "#cbd5e1",
+  MONITORING: "#9ca3af",
+  RECOVERED: "#4ade80",
+  UNKNOWN: "#6b7280",
 };
 
 const STATUS_RADIUS: Record<CaseEventStatus, number> = {
@@ -128,9 +128,9 @@ export function ChoroplethMap({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  // Forced dark base regardless of page theme — matches the ArcGIS map.
-  const effectiveBorder = borderColor ?? "#3A322B";
-  const effectiveHover = hoverColor ?? "#D87A5F";
+  // Live-tracker palette — navy borders, amber hover.
+  const effectiveBorder = borderColor ?? "#22324e";
+  const effectiveHover = hoverColor ?? "#f6a623";
 
   const byIso3 = useMemo(() => {
     const m = new Map<string, CountryAggregate>();

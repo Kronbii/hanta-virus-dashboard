@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { Inter_Tight, Geist } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "900"],
-  variable: "--font-display",
-  display: "swap",
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
-const inter = Inter({
+const body = Inter_Tight({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-body",
@@ -18,30 +13,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Hantavirus — global situation",
+  title: "Hantawatch — live OSINT situation board",
   description:
-    "A live record of hantavirus cases and outbreak reporting worldwide. Aggregated from WHO Disease Outbreak News, the U.S. CDC, GDELT, and Google News.",
+    "Live worldwide hantavirus tracker. Aggregated from WHO Disease Outbreak News, the U.S. CDC, ArcGIS Hondius case tracker, GDELT 2.0, and Google News.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
-    >
-      <body className="min-h-full">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
-      </body>
+    <html lang="en" className={cn("h-full", "antialiased", "dark", body.variable, "font-sans", geist.variable)}>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }

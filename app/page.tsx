@@ -1,19 +1,11 @@
 import { Suspense } from "react";
-import { Header } from "@/components/dashboard/Header";
-import { DataPanel } from "@/components/dashboard/DataPanel";
-import { DashboardSkeleton } from "@/components/dashboard/DashboardSkeleton";
+import { LiveDashboard } from "@/components/live/LiveDashboard";
+import { DashboardSkeleton } from "@/components/live/DashboardSkeleton";
 
-interface PageProps {
-  searchParams: Promise<{ country?: string | string[] }>;
-}
-
-export default function Page({ searchParams }: PageProps) {
+export default function Page() {
   return (
-    <main>
-      <Header />
-      <Suspense fallback={<DashboardSkeleton />}>
-        <DataPanel searchParamsPromise={searchParams} />
-      </Suspense>
-    </main>
+    <Suspense fallback={<DashboardSkeleton />}>
+      <LiveDashboard />
+    </Suspense>
   );
 }

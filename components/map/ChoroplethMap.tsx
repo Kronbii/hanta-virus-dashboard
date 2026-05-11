@@ -17,7 +17,7 @@ const ChoroplethMapClient = dynamic(
     loading: () => (
       <div
         className="h-full w-full"
-        style={{ background: "var(--paper)" }}
+        style={{ background: "var(--bg-2)" }}
         aria-hidden
       />
     ),
