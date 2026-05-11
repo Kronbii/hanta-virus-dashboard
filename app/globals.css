@@ -453,7 +453,7 @@ body {
   padding-top: 6px;
 }
 
-.case-popup-source:hover { color: var(--warn); }
+.case-popup-source:hover { color: var(--brand); }
 
 /* ────────────────────────────────────────────────────────────────────────────
    Scrollbars (dark, slim)
