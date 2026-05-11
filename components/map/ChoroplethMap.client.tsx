@@ -158,13 +158,15 @@ export function ChoroplethMap({
   highlightIso3,
   interactive = true,
   className,
+  feedVisible = true,
+  panelVisible = true,
 }: ChoroplethMapProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  // Live-tracker palette — navy borders, amber hover.
+  // Live-tracker palette — navy borders, magenta hover.
   const effectiveBorder = borderColor ?? "#22324e";
-  const effectiveHover = hoverColor ?? "#f6a623";
+  const effectiveHover = hoverColor ?? "#C800DF";
   // Treat ?country=ISO3 as the live highlight when no explicit prop is supplied.
   const effectiveHighlight =
     highlightIso3 ?? searchParams?.get("country") ?? undefined;
