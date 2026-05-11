@@ -11,8 +11,6 @@ interface Props {
   events: CaseEvent[];
   totalCases: number;
   now: number;
-  /** "show" forces visible, "hide" forces hidden, "auto" = desktop visible / mobile hidden. */
-  mode: "show" | "hide" | "auto";
 }
 
 // PROBABLE shares its icon with SUSPECTED — they're presented identically.
