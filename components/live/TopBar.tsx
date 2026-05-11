@@ -117,6 +117,57 @@ export function TopBar({ trackedCount, view, query }: Props) {
         </span>
         <LiveClock />
       </div>
+
+      {/* Mobile drawer — slides in from the right under the top bar */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed left-0 right-0 top-12 z-40 border-b border-border bg-[#080e1a]/97 backdrop-blur-md px-3 py-3 flex flex-col gap-3 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+          <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <span className="inline-block size-2 rounded-full bg-[#4ade80] animate-pulse" />
+              Live ·{" "}
+              <span className="tabular-nums text-foreground">{trackedCount}</span>{" "}
+              tracked
+            </span>
+            <LiveClock />
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close filters"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md hover:bg-white/5"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+
+          <Tabs value={view} onValueChange={(v) => setView(String(v))}>
+            <TabsList className="h-9 bg-white/[0.04] p-0.5 gap-0.5 w-full">
+              <TabsTrigger
+                value="live"
+                className="flex-1 h-8 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-foreground rounded-[3px]"
+              >
+                <Activity className="size-3" /> Live
+              </TabsTrigger>
+              <TabsTrigger
+                value="cases"
+                className="flex-1 h-8 text-[11px] uppercase tracking-[0.1em] gap-1.5 data-[state=active]:bg-white/10 data-[state=active]:text-foreground rounded-[3px]"
+              >
+                <Map className="size-3" /> Cases
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={draftQuery}
+              onChange={(e) => setDraftQuery(e.target.value)}
+              placeholder="Filter region, exposure group…"
+              aria-label="Filter case events"
+              className="h-10 pl-8 text-sm bg-white/[0.04] border-border placeholder:text-muted-foreground/80"
+            />
+          </div>
+        </div>
+      )}
     </header>
   );
 }
