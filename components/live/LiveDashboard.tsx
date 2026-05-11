@@ -132,61 +132,51 @@ export async function LiveDashboard({
 
   return (
     <main className="fixed inset-0 overflow-hidden bg-background text-foreground">
-      <LiveMap
-        countries={eventCountryRollup}
-        events={filteredEvents}
-        feedVisible={feedMode !== "hide"}
-        panelVisible={panelMode !== "hide"}
-      />
+      <UiStateProvider>
+        {/* Map renders once with desktop-default padding (panel auto = visible
+            md+). Refits don't happen on toggle so this matches the typical
+            first paint. */}
+        <LiveMap
+          countries={eventCountryRollup}
+          events={filteredEvents}
+          feedVisible={false}
+          panelVisible={true}
+        />
 
-      <TopBar
-        trackedCount={tracked}
-        view={filters.view ?? "live"}
-        query={filters.q ?? ""}
-      />
+        <TopBar
+          trackedCount={tracked}
+          view={filters.view ?? "live"}
+          query={filters.q ?? ""}
+        />
 
-      <EventFeed
-        events={filteredEvents}
-        totalCases={totalCases}
-        now={now}
-        mode={feedMode}
-      />
+        <FeedShell>
+          <EventFeed
+            events={filteredEvents}
+            totalCases={totalCases}
+            now={now}
+          />
+        </FeedShell>
 
-      <RightPanel
-        totalCases={totalCases}
-        fatalities={fatalities}
-        deathRate={deathRate}
-        statusBreakdown={statusBreakdown}
-        sourceHealth={allHealth}
-        countryRollup={eventCountryRollup}
-        events={filteredEvents}
-        now={now}
-        mode={panelMode}
-      />
+        <RightPanel
+          totalCases={totalCases}
+          fatalities={fatalities}
+          deathRate={deathRate}
+          statusBreakdown={statusBreakdown}
+          sourceHealth={allHealth}
+          countryRollup={eventCountryRollup}
+          events={filteredEvents}
+          now={now}
+        />
 
-      {/* Mobile-only HUD: floats the headline numbers under the TopBar
-          when the user hasn't expanded the full stats sheet. */}
-      {panelMode !== "show" && (
         <MobileStatsHud
           totalCases={totalCases}
           deaths={fatalities}
           deathRate={deathRate}
         />
-      )}
 
-      {/* Open buttons surface when a panel is hidden. In auto mode the
-          panel is desktop-visible / mobile-hidden, so the open button is
-          mobile-only. In hide mode it's always shown. */}
-      {feedMode !== "show" && (
-        <div className={feedMode === "hide" ? "" : "md:hidden"}>
-          <FeedOpenButton count={tracked} />
-        </div>
-      )}
-      {panelMode !== "show" && (
-        <div className={panelMode === "hide" ? "" : "md:hidden"}>
-          <PanelOpenButton activeCases={totalCases} />
-        </div>
-      )}
+        <FeedOpenButton count={tracked} />
+        <PanelOpenButton activeCases={totalCases} />
+      </UiStateProvider>
 
       <NewsTicker items={newsResult.items} />
     </main>
