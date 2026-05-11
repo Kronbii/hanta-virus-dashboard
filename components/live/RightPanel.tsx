@@ -158,7 +158,7 @@ export function RightPanel({
     md:inset-x-auto md:right-4 md:top-16 md:bottom-14 md:max-h-none md:w-[340px]`;
 
   return (
-    <TooltipProvider delayDuration={200}>
+    <TooltipProvider delay={200}>
       <aside className={containerClass} aria-label="Outbreak statistics">
         {/* ── Outbreak snapshot ─────────────────────────────────────── */}
         <Card className="bg-[rgba(10,18,32,0.92)] md:bg-[rgba(10,18,32,0.78)] backdrop-blur-md border-border shadow-[0_20px_40px_rgba(0,0,0,0.5)] py-3 gap-0">
