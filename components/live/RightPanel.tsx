@@ -144,11 +144,11 @@ export function RightPanel({
   };
 
   // Visibility classes:
-  //   mode === "show" → always visible
-  //   mode === "hide" → never visible
-  //   mode === "auto" → hidden on mobile, visible md+
+  //   open    → always visible
+  //   closed  → never visible
+  //   auto    → hidden on mobile, visible md+
   const visClass =
-    mode === "show" ? "flex" : mode === "hide" ? "hidden" : "hidden md:flex";
+    mode === "open" ? "flex" : mode === "closed" ? "hidden" : "hidden md:flex";
 
   // Layout: desktop is a floating right column; mobile is a full-width
   // bottom sheet that fills most of the viewport.
