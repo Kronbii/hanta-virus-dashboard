@@ -70,13 +70,56 @@ export function Sparkline({
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
       />
-      {points.length > 0 && (
-        <circle
-          cx={points[points.length - 1][0]}
-          cy={points[points.length - 1][1]}
-          r={1.6}
-          fill={color}
-        />
+      {/* Peak marker */}
+      {peak && peak[2] > 0 && (
+        <>
+          <circle
+            cx={peak[0]}
+            cy={peak[1]}
+            r={2}
+            fill="none"
+            stroke={color}
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+          />
+          <text
+            x={peak[0]}
+            y={Math.max(8, peak[1] - 4)}
+            textAnchor="middle"
+            fontSize="6.5"
+            fontFamily="var(--font-mono), monospace"
+            fontWeight="600"
+            fill={color}
+          >
+            {peak[2]}
+          </text>
+        </>
+      )}
+
+      {/* Today marker — vertical hint + dot */}
+      {lastPoint && (
+        <>
+          <line
+            x1={lastPoint[0]}
+            x2={lastPoint[0]}
+            y1="0"
+            y2={height}
+            stroke={color}
+            strokeWidth="0.5"
+            strokeOpacity="0.3"
+            strokeDasharray="2 2"
+            vectorEffect="non-scaling-stroke"
+          />
+          <circle
+            cx={lastPoint[0]}
+            cy={lastPoint[1]}
+            r={2.2}
+            fill={color}
+            stroke="#0a1220"
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+          />
+        </>
       )}
     </svg>
   );
