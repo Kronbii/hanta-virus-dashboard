@@ -79,9 +79,11 @@ function ResizeOnMount() {
 }
 
 /**
- * Fit the map to the bounding box of all case events on initial load (so a
- * user lands looking at the active cluster instead of an empty world).
- * Falls back to a world view when there are no events.
+ * Fit the map to the bounding box of all case events on initial load. Uses
+ * asymmetric padding that matches the OSINT live-tracker chrome (left feed
+ * panel ~376px wide, right panel ~336px wide, top bar 48px, ticker 40px) so
+ * pins never end up hidden behind the floating panels. Caps zoom so a tight
+ * cluster doesn't fly the user out of the global context.
  */
 function FitToEvents({ events }: { events: CaseEvent[] }) {
   const map = useMap();
@@ -93,7 +95,12 @@ function FitToEvents({ events }: { events: CaseEvent[] }) {
       (e) => [e.coordinates[1], e.coordinates[0]] as [number, number],
     );
     const bounds = L.latLngBounds(points);
-    map.fitBounds(bounds, { padding: [40, 40], maxZoom: 5, animate: false });
+    map.fitBounds(bounds, {
+      paddingTopLeft: [392, 80],
+      paddingBottomRight: [352, 72],
+      maxZoom: 3,
+      animate: false,
+    });
     didFit.current = true;
   }, [events, map]);
   return null;
