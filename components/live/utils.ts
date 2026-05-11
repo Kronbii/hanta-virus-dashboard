@@ -1,9 +1,11 @@
 import type { CaseEvent, CaseEventStatus } from "@/lib/types";
 
+// PROBABLE is presented as SUSPECTED across the UI — keep the underlying
+// status distinct in the data layer but render them identically.
 export const STATUS_TINT: Record<CaseEventStatus, string> = {
   DECEASED: "#e23b3b",
   CONFIRMED: "#f6a623",
-  PROBABLE: "#38bdf8",
+  PROBABLE: "#cbd5e1",
   SUSPECTED: "#cbd5e1",
   MONITORING: "#9ca3af",
   RECOVERED: "#4ade80",
