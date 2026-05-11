@@ -59,7 +59,7 @@ export function EventFeed({ events, totalCases, now }: Props) {
               <article key={ev.id}>
                 <Row
                   {...rowProps}
-                  className="grid grid-cols-[28px_1fr] gap-2.5 px-3.5 py-3 transition-colors hover:bg-white/[0.03] focus-visible:bg-white/[0.05] focus-visible:outline-none cursor-pointer"
+                  className="grid grid-cols-[28px_1fr] gap-2.5 px-3.5 py-3 transition-colors hover:bg-white/3 focus-visible:bg-white/5 focus-visible:outline-none cursor-pointer"
                 >
                   <div className="flex justify-center pt-0.5">
                     <span
