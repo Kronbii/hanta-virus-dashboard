@@ -1,26 +1,7 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { X, PanelLeftOpen, PanelRightOpen } from "lucide-react";
-
-type Side = "feed" | "panel";
-
-const KEY: Record<Side, string> = {
-  feed: "feed",
-  panel: "panel",
-};
-
-function useToggle(side: Side, next: "show" | "hide") {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  return () => {
-    const params = new URLSearchParams(searchParams?.toString() ?? "");
-    params.set(KEY[side], next);
-    const qs = params.toString();
-    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
-  };
-}
+import { useUiState } from "./UiState";
 
 const CLOSE_BUTTON =
   "inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/[0.06] hover:text-foreground focus-visible:outline-none";
