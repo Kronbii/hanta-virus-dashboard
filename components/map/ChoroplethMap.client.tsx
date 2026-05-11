@@ -171,6 +171,28 @@ export function ChoroplethMap({
   const effectiveHighlight =
     highlightIso3 ?? searchParams?.get("country") ?? undefined;
 
+  const onClearCountry = useCallback(() => {
+    if (!interactive) return;
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    if (!params.has("country")) return;
+    params.delete("country");
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [interactive, router, pathname, searchParams]);
+
+  // Escape clears the country selection — works anywhere on the page so long
+  // as no input is consuming the key.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      const target = e.target as HTMLElement | null;
+      if (target && /^(input|textarea|select)$/i.test(target.tagName)) return;
+      onClearCountry();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClearCountry]);
+
   const byIso3 = useMemo(() => {
     const m = new Map<string, CountryAggregate>();
     for (const d of data) m.set(d.iso3, d);
