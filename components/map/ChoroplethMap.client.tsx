@@ -43,11 +43,11 @@ const TILE_ATTRIBUTION =
   '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>';
 
 // Status palette — live-tracker / OSINT board. Hot red for fatal, amber for
-// confirmed, cyan for probable, slate for suspect, dim green for recovered.
+// confirmed, slate for suspect+probable (merged), dim green for recovered.
 const STATUS_COLOR: Record<CaseEventStatus, string> = {
   DECEASED: "#e23b3b",
   CONFIRMED: "#f6a623",
-  PROBABLE: "#38bdf8",
+  PROBABLE: "#cbd5e1",
   SUSPECTED: "#cbd5e1",
   MONITORING: "#9ca3af",
   RECOVERED: "#4ade80",
