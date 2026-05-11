@@ -14,6 +14,8 @@ export interface DashboardFilters {
   country?: string;
   q?: string;
   view?: string;
+  feed?: string; // "show" | "hide" — overrides viewport default
+  panel?: string; // "show" | "hide" — overrides viewport default
 }
 
 // Statuses we treat as "an actual case" for the rollup KPI. MONITORING is
