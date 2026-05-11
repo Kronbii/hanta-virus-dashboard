@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Jost } from "next/font/google";
+import { Jost, Overpass_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +8,13 @@ const body = Jost({
   subsets: ["latin"],
   weight: ["400", "600", "800"],
   variable: "--font-body",
+  display: "swap",
+});
+
+const mono = Overpass_Mono({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -21,7 +28,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={cn("h-full", "antialiased", "dark", body.variable, "font-sans")}>
+    <html lang="en" className={cn("h-full", "antialiased", "dark", body.variable, mono.variable, "font-sans")}>
       <body className="min-h-full">{children}</body>
     </html>
   );
