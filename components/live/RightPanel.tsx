@@ -3,6 +3,7 @@
 import { Info } from "lucide-react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { NumberTicker } from "@/components/ui/number-ticker";
 import {
@@ -90,14 +91,19 @@ export function RightPanel({
     mode === "open" ? "flex" : mode === "closed" ? "hidden" : "hidden md:flex";
 
   // Layout: desktop is a floating right column; mobile is a full-width
-  // bottom sheet that fills most of the viewport.
-  const containerClass = `${visClass} fixed z-30 flex-col gap-3
-    inset-x-2 bottom-2 top-14 max-h-[calc(100vh-3.5rem-1rem)]
-    md:inset-x-auto md:right-4 md:top-16 md:bottom-14 md:max-h-none md:w-[340px]`;
+  // bottom sheet that fills most of the viewport. The aside is just the
+  // positioned shell; an inner div handles the flex stack + scrolling so
+  // overflow detection is unambiguous (aside has a definite height from
+  // top/bottom, inner uses h-full + flex-1 children pattern).
+  const containerClass = `${visClass} fixed z-30 flex-col overflow-hidden
+    inset-x-2 bottom-2 top-14
+    md:inset-x-auto md:right-4 md:top-16 md:bottom-14 md:w-[340px]`;
 
   return (
     <TooltipProvider delay={200}>
       <aside className={containerClass} aria-label="Outbreak statistics">
+        <ScrollArea className="flex-1 min-h-0 **:data-[slot=scroll-area-scrollbar]:hidden">
+          <div className="flex flex-col gap-3">
         {/* ── Outbreak snapshot ─────────────────────────────────────── */}
         <Card className="bg-[rgba(10,18,32,0.92)] md:bg-[rgba(10,18,32,0.78)] backdrop-blur-md border-border shadow-[0_20px_40px_rgba(0,0,0,0.5)] py-3 gap-0">
           <CardHeader className="px-3.5 pb-2 flex flex-row items-center justify-between">
@@ -251,7 +257,7 @@ export function RightPanel({
         </Card>
 
         {/* ── Source health (verbose) ──────────────────────────────── */}
-        <Card className="bg-[rgba(10,18,32,0.92)] md:bg-[rgba(10,18,32,0.78)] backdrop-blur-md border-border shadow-[0_20px_40px_rgba(0,0,0,0.5)] py-3 gap-0 flex-1 min-h-0 overflow-hidden">
+        <Card className="bg-[rgba(10,18,32,0.92)] md:bg-[rgba(10,18,32,0.78)] backdrop-blur-md border-border shadow-[0_20px_40px_rgba(0,0,0,0.5)] py-3 gap-0">
           <CardHeader className="px-3.5 pb-2 flex flex-row items-center justify-between">
             <CardTitle className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Source health
@@ -260,7 +266,7 @@ export function RightPanel({
               last fetch
             </span>
           </CardHeader>
-          <CardContent className="px-3.5 py-0 scroll-y overflow-y-auto -mr-2 pr-2">
+          <CardContent className="px-3.5 py-0">
             <ul className="space-y-1.5">
               {sourceHealth.map((s) => (
                 <SourceRow key={s.source} health={s} now={now} />
@@ -268,6 +274,8 @@ export function RightPanel({
             </ul>
           </CardContent>
         </Card>
+          </div>
+        </ScrollArea>
       </aside>
     </TooltipProvider>
   );

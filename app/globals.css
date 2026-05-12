@@ -468,6 +468,9 @@ body {
 }
 .scroll-y::-webkit-scrollbar-thumb:hover { background: rgba(140, 170, 220, 0.35); }
 
+.scroll-hide { scrollbar-width: none; -ms-overflow-style: none; }
+.scroll-hide::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
 /* Dark mode = default. shadcn tokens routed to live-tracker palette so
    all shadcn primitives (Tabs, Card, Badge, Tooltip…) inherit the OSINT look. */
 .dark {
