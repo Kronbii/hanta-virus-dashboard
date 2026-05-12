@@ -1,15 +1,4 @@
-"use client";
-
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { ChoroplethMap } from "@/components/map/ChoroplethMap";
-import {
-  BASEMAP_PRESETS,
-  DEFAULT_MAP_CONFIG,
-  RAMP_PRESETS,
-  type MapStyleConfig,
-} from "@/components/map/map-presets";
-import { MapSandboxPanel } from "@/components/map/MapSandboxPanel";
 import type { CaseEvent, CountryAggregate } from "@/lib/types";
 
 interface Props {
@@ -19,64 +8,37 @@ interface Props {
   panelVisible?: boolean;
 }
 
+// Red-hot choropleth ramp (5 stops, deep → bright)
+const RAMP: [string, string, string, string, string] = [
+  "#3b0a0a",
+  "#6e1313",
+  "#a52121",
+  "#d44a4a",
+  "#ff8585",
+];
+
 export function LiveMap({ countries, events, feedVisible, panelVisible }: Props) {
-  const searchParams = useSearchParams();
-  const sandboxActive = searchParams?.get("sandbox") === "1";
-
-  const [config, setConfig] = useState<MapStyleConfig>(DEFAULT_MAP_CONFIG);
-  const [closed, setClosed] = useState(false);
-
-  const basemap = BASEMAP_PRESETS[config.basemapKey] ?? BASEMAP_PRESETS["carto-dark"];
-  const ramp = RAMP_PRESETS[config.rampKey];
-
   return (
-    <>
-      <div className="absolute inset-0 z-0 live-map">
-        <ChoroplethMap
-          className="live-map"
-          data={countries}
-          events={events}
-          colorRamp={ramp}
-          emptyColor="#0e1a2c"
-          borderColor={config.borderColor}
-          hoverColor={config.hoverColor}
-          feedVisible={feedVisible}
-          panelVisible={panelVisible}
-          tileLandUrl={basemap.land}
-          tileLabelsUrl={config.showLabels ? basemap.labels : null}
-          tileAttribution={basemap.attribution}
-          fillOpacity={config.fillOpacity}
-          emptyOpacity={config.emptyOpacity}
-          borderWeight={config.borderWeight}
-          hoverWeight={config.hoverWeight}
-          markerColors={config.markerColors}
-          markerSizeScale={config.markerSizeScale}
-          markerBorderColor={config.markerBorderColor}
-          markerBorderWeight={config.markerBorderWeight}
-          markerFillOpacity={config.markerFillOpacity}
-          minZoom={config.minZoom}
-          maxZoom={config.maxZoom}
-          worldCopyJump={config.worldCopyJump}
-          zoomAnimation={config.zoomAnimation}
-          zoomControl={config.zoomControl}
-          wheelDebounceTime={config.wheelDebounceTime}
-        />
-        {config.glowEnabled && (
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background: `radial-gradient(ellipse at 70% 30%, ${config.glowColor1}, transparent 55%), radial-gradient(ellipse at 25% 70%, ${config.glowColor2}, transparent 55%)`,
-            }}
-          />
-        )}
-      </div>
-      {sandboxActive && !closed && (
-        <MapSandboxPanel
-          config={config}
-          setConfig={setConfig}
-          onClose={() => setClosed(true)}
-        />
-      )}
-    </>
+    <div className="absolute inset-0 z-0 live-map">
+      <ChoroplethMap
+        className="live-map"
+        data={countries}
+        events={events}
+        colorRamp={RAMP}
+        emptyColor="#0e1a2c"
+        borderColor="#22324e"
+        hoverColor="#C800DF"
+        feedVisible={feedVisible}
+        panelVisible={panelVisible}
+      />
+      {/* radial glow overlay to lift hot-zones visually */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 70% 30%, rgba(226, 59, 59, 0.07), transparent 55%), radial-gradient(ellipse at 25% 70%, rgba(56, 189, 248, 0.05), transparent 55%)",
+        }}
+      />
+    </div>
   );
 }
