@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import type { GeoJSON as LeafletGeoJSON } from "leaflet";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import L, { type PathOptions } from "leaflet";
 import {
@@ -222,29 +223,42 @@ export function ChoroplethMap({
   const closuresRef = useRef({ byIso3, colorScale, highlightIso3: effectiveHighlight, onSelect });
   closuresRef.current = { byIso3, colorScale, highlightIso3: effectiveHighlight, onSelect };
 
-  const baseStyleFor = (
-    feature: Feature<Geometry, unknown> | undefined,
-  ): PathOptions => {
-    if (!feature) return {};
-    const { byIso3, colorScale, highlightIso3 } = closuresRef.current;
-    const iso3 = numericToAlpha3(feature.id as string | number | undefined);
-    const country = iso3 ? byIso3.get(iso3) : undefined;
-    const isHighlight = !!highlightIso3 && iso3 === highlightIso3;
-    if (!country) {
+  const baseStyleFor = useCallback(
+    (feature: Feature<Geometry, unknown> | undefined): PathOptions => {
+      if (!feature) return {};
+      const { byIso3, colorScale, highlightIso3 } = closuresRef.current;
+      const iso3 = numericToAlpha3(feature.id as string | number | undefined);
+      const country = iso3 ? byIso3.get(iso3) : undefined;
+      const isHighlight = !!highlightIso3 && iso3 === highlightIso3;
+      if (!country) {
+        return {
+          color: effectiveBorder,
+          weight: 0.4,
+          fillColor: emptyColor,
+          fillOpacity: 0,
+        };
+      }
       return {
-        color: effectiveBorder,
-        weight: 0.4,
-        fillColor: emptyColor,
-        fillOpacity: 0,
+        color: isHighlight ? effectiveHover : effectiveBorder,
+        weight: isHighlight ? 1.5 : 0.4,
+        fillColor: colorScale(country.totalCases),
+        fillOpacity: 0.55,
       };
-    }
-    return {
-      color: isHighlight ? effectiveHover : effectiveBorder,
-      weight: isHighlight ? 1.5 : 0.4,
-      fillColor: colorScale(country.totalCases),
-      fillOpacity: 0.55,
-    };
-  };
+    },
+    [effectiveBorder, effectiveHover, emptyColor],
+  );
+
+  // Imperatively restyle the GeoJSON layer when highlight/data changes — much
+  // cheaper than unmounting/remounting the layer on every country click.
+  const geoJsonRef = useRef<LeafletGeoJSON | null>(null);
+  useEffect(() => {
+    const gj = geoJsonRef.current;
+    if (!gj) return;
+    gj.eachLayer((layer) => {
+      const f = (layer as L.Layer & { feature?: Feature<Geometry, unknown> }).feature;
+      if (f) (layer as L.Path).setStyle(baseStyleFor(f));
+    });
+  }, [effectiveHighlight, data, baseStyleFor]);
 
   const onEachFeature = (feature: Feature<Geometry, unknown>, layer: L.Layer) => {
     const iso3 = numericToAlpha3(feature.id as string | number | undefined);
@@ -287,10 +301,6 @@ export function ChoroplethMap({
     });
   };
 
-  // Re-key the GeoJSON layer when its data or highlight changes so style
-  // closures re-bind cleanly.
-  const geoKey = `${data.length}-${effectiveHighlight ?? ""}`;
-
   return (
     <MapContainer
       className={className}
@@ -298,6 +308,9 @@ export function ChoroplethMap({
       zoom={2}
       minZoom={2}
       maxZoom={7}
+      // Canvas renderer is dramatically faster than SVG when redrawing many
+      // polygons + markers on zoom — avoids per-path d-attribute updates.
+      preferCanvas
       // Infinite horizontal wrap — tiles repeat across world copies and the
       // map view jumps to keep GeoJSON/markers aligned. Latitude is clamped.
       worldCopyJump
@@ -323,11 +336,15 @@ export function ChoroplethMap({
       <MapBackgroundClickClear onClear={onClearCountry} />
 
       {/* Dark base: land only. Tiles repeat across world copies. */}
-      <TileLayer url={TILE_LAND} attribution={TILE_ATTRIBUTION} />
+      <TileLayer
+        url={TILE_LAND}
+        attribution={TILE_ATTRIBUTION}
+        keepBuffer={4}
+      />
 
       {/* Subtle choropleth — country shading under the markers. */}
       <GeoJSON
-        key={geoKey}
+        ref={geoJsonRef}
         data={WORLD_GEOJSON}
         style={baseStyleFor}
         onEachFeature={onEachFeature}
