@@ -30,44 +30,46 @@ export function LiveMap({ countries, events, feedVisible, panelVisible }: Props)
   const ramp = RAMP_PRESETS[config.rampKey];
 
   return (
-    <div className="absolute inset-0 z-0 live-map">
-      <ChoroplethMap
-        className="live-map"
-        data={countries}
-        events={events}
-        colorRamp={ramp}
-        emptyColor="#0e1a2c"
-        borderColor={config.borderColor}
-        hoverColor={config.hoverColor}
-        feedVisible={feedVisible}
-        panelVisible={panelVisible}
-        tileLandUrl={basemap.land}
-        tileLabelsUrl={config.showLabels ? basemap.labels : null}
-        tileAttribution={basemap.attribution}
-        fillOpacity={config.fillOpacity}
-        emptyOpacity={config.emptyOpacity}
-        borderWeight={config.borderWeight}
-        hoverWeight={config.hoverWeight}
-        markerColors={config.markerColors}
-        markerSizeScale={config.markerSizeScale}
-        markerBorderColor={config.markerBorderColor}
-        markerBorderWeight={config.markerBorderWeight}
-        markerFillOpacity={config.markerFillOpacity}
-        minZoom={config.minZoom}
-        maxZoom={config.maxZoom}
-        worldCopyJump={config.worldCopyJump}
-        zoomAnimation={config.zoomAnimation}
-        zoomControl={config.zoomControl}
-        wheelDebounceTime={config.wheelDebounceTime}
-      />
-      {config.glowEnabled && (
-        <div
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse at 70% 30%, ${config.glowColor1}, transparent 55%), radial-gradient(ellipse at 25% 70%, ${config.glowColor2}, transparent 55%)`,
-          }}
+    <>
+      <div className="absolute inset-0 z-0 live-map">
+        <ChoroplethMap
+          className="live-map"
+          data={countries}
+          events={events}
+          colorRamp={ramp}
+          emptyColor="#0e1a2c"
+          borderColor={config.borderColor}
+          hoverColor={config.hoverColor}
+          feedVisible={feedVisible}
+          panelVisible={panelVisible}
+          tileLandUrl={basemap.land}
+          tileLabelsUrl={config.showLabels ? basemap.labels : null}
+          tileAttribution={basemap.attribution}
+          fillOpacity={config.fillOpacity}
+          emptyOpacity={config.emptyOpacity}
+          borderWeight={config.borderWeight}
+          hoverWeight={config.hoverWeight}
+          markerColors={config.markerColors}
+          markerSizeScale={config.markerSizeScale}
+          markerBorderColor={config.markerBorderColor}
+          markerBorderWeight={config.markerBorderWeight}
+          markerFillOpacity={config.markerFillOpacity}
+          minZoom={config.minZoom}
+          maxZoom={config.maxZoom}
+          worldCopyJump={config.worldCopyJump}
+          zoomAnimation={config.zoomAnimation}
+          zoomControl={config.zoomControl}
+          wheelDebounceTime={config.wheelDebounceTime}
         />
-      )}
+        {config.glowEnabled && (
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: `radial-gradient(ellipse at 70% 30%, ${config.glowColor1}, transparent 55%), radial-gradient(ellipse at 25% 70%, ${config.glowColor2}, transparent 55%)`,
+            }}
+          />
+        )}
+      </div>
       {sandboxActive && !closed && (
         <MapSandboxPanel
           config={config}
@@ -75,6 +77,6 @@ export function LiveMap({ countries, events, feedVisible, panelVisible }: Props)
           onClose={() => setClosed(true)}
         />
       )}
-    </div>
+    </>
   );
 }
