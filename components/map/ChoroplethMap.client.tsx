@@ -35,6 +35,26 @@ export interface ChoroplethMapProps {
   /** Whether the left/right floating panels are visible — affects fit padding. */
   feedVisible?: boolean;
   panelVisible?: boolean;
+  // ── Sandbox / customization knobs (all optional, defaults match current look)
+  tileLandUrl?: string;
+  tileLabelsUrl?: string | null;
+  tileAttribution?: string;
+  fillOpacity?: number;
+  emptyOpacity?: number;
+  borderWeight?: number;
+  hoverWeight?: number;
+  markerColors?: Record<CaseEventStatus, string>;
+  markerRadii?: Record<CaseEventStatus, number>;
+  markerSizeScale?: number;
+  markerBorderColor?: string;
+  markerBorderWeight?: number;
+  markerFillOpacity?: number;
+  minZoom?: number;
+  maxZoom?: number;
+  worldCopyJump?: boolean;
+  zoomAnimation?: boolean;
+  zoomControl?: boolean;
+  wheelDebounceTime?: number;
 }
 
 // Dark editorial basemap — split into land and label tile layers so the
@@ -161,6 +181,25 @@ export function ChoroplethMap({
   className,
   feedVisible = true,
   panelVisible = true,
+  tileLandUrl = TILE_LAND,
+  tileLabelsUrl = TILE_LABELS,
+  tileAttribution = TILE_ATTRIBUTION,
+  fillOpacity = 0.55,
+  emptyOpacity = 0,
+  borderWeight = 0.4,
+  hoverWeight = 1.5,
+  markerColors = STATUS_COLOR,
+  markerRadii = STATUS_RADIUS,
+  markerSizeScale = 1,
+  markerBorderColor = "#0A0A0A",
+  markerBorderWeight = 1,
+  markerFillOpacity = 0.95,
+  minZoom = 2,
+  maxZoom = 7,
+  worldCopyJump = true,
+  zoomAnimation = true,
+  zoomControl = true,
+  wheelDebounceTime = 40,
 }: ChoroplethMapProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -233,19 +272,19 @@ export function ChoroplethMap({
       if (!country) {
         return {
           color: effectiveBorder,
-          weight: 0.4,
+          weight: borderWeight,
           fillColor: emptyColor,
-          fillOpacity: 0,
+          fillOpacity: emptyOpacity,
         };
       }
       return {
         color: isHighlight ? effectiveHover : effectiveBorder,
-        weight: isHighlight ? 1.5 : 0.4,
+        weight: isHighlight ? hoverWeight : borderWeight,
         fillColor: colorScale(country.totalCases),
-        fillOpacity: 0.55,
+        fillOpacity,
       };
     },
-    [effectiveBorder, effectiveHover, emptyColor],
+    [effectiveBorder, effectiveHover, emptyColor, borderWeight, hoverWeight, fillOpacity, emptyOpacity],
   );
 
   // Imperatively restyle the GeoJSON layer when highlight/data changes — much
@@ -285,7 +324,7 @@ export function ChoroplethMap({
         closuresRef.current.onSelect(iso3);
       },
       mouseover: () => {
-        path.setStyle({ weight: 1.5, color: effectiveHover, fillOpacity: 0.7 });
+        path.setStyle({ weight: hoverWeight, color: effectiveHover, fillOpacity: Math.min(1, fillOpacity + 0.15) });
         path.bringToFront();
       },
       mouseout: () => {
@@ -301,23 +340,30 @@ export function ChoroplethMap({
     });
   };
 
+  // Structural changes (minZoom/maxZoom/worldCopyJump/zoomAnimation/zoomControl)
+  // can't be applied to a Leaflet map after init, so key the MapContainer on them
+  // to force a remount. Style/color/marker changes flow through props as usual.
+  const mapKey = `${minZoom}-${maxZoom}-${worldCopyJump}-${zoomAnimation}-${zoomControl}`;
+
   return (
     <MapContainer
+      key={mapKey}
       className={className}
       center={[20, 0]}
-      zoom={2}
-      minZoom={2}
-      maxZoom={7}
+      zoom={Math.max(minZoom, 2)}
+      minZoom={minZoom}
+      maxZoom={maxZoom}
       // Canvas renderer is dramatically faster than SVG when redrawing many
       // polygons + markers on zoom — avoids per-path d-attribute updates.
       preferCanvas
       // Infinite horizontal wrap — tiles repeat across world copies and the
       // map view jumps to keep GeoJSON/markers aligned. Latitude is clamped.
-      worldCopyJump
+      worldCopyJump={worldCopyJump}
+      zoomAnimation={zoomAnimation}
       scrollWheelZoom
-      wheelDebounceTime={40}
+      wheelDebounceTime={wheelDebounceTime}
       wheelPxPerZoomLevel={120}
-      zoomControl
+      zoomControl={zoomControl}
       attributionControl
       // Latitude clamped, longitude free — worldCopyJump handles the wrap.
       maxBounds={[
@@ -335,10 +381,11 @@ export function ChoroplethMap({
       />
       <MapBackgroundClickClear onClear={onClearCountry} />
 
-      {/* Dark base: land only. Tiles repeat across world copies. */}
+      {/* Base land tiles. Tiles repeat across world copies. */}
       <TileLayer
-        url={TILE_LAND}
-        attribution={TILE_ATTRIBUTION}
+        key={tileLandUrl}
+        url={tileLandUrl}
+        attribution={tileAttribution}
         keepBuffer={4}
       />
 
@@ -353,18 +400,18 @@ export function ChoroplethMap({
       {/* Status-colored case-event markers. */}
       <LayerGroup>
         {events.map((ev) => {
-          const fill = STATUS_COLOR[ev.status];
-          const radius = STATUS_RADIUS[ev.status];
+          const fill = markerColors[ev.status];
+          const radius = markerRadii[ev.status] * markerSizeScale;
           return (
             <CircleMarker
               key={ev.id}
               center={[ev.coordinates[1], ev.coordinates[0]]}
               radius={radius}
               pathOptions={{
-                color: "#0A0A0A",
-                weight: 1,
+                color: markerBorderColor,
+                weight: markerBorderWeight,
                 fillColor: fill,
-                fillOpacity: 0.95,
+                fillOpacity: markerFillOpacity,
               }}
             >
               <Popup className="case-popup">
@@ -436,9 +483,11 @@ export function ChoroplethMap({
       </LayerGroup>
 
       {/* Labels above everything else. Wraps along with the base tiles. */}
-      <Pane name="labels" style={{ zIndex: 650, pointerEvents: "none" }}>
-        <TileLayer url={TILE_LABELS} />
-      </Pane>
+      {tileLabelsUrl ? (
+        <Pane name="labels" style={{ zIndex: 650, pointerEvents: "none" }}>
+          <TileLayer key={tileLabelsUrl} url={tileLabelsUrl} />
+        </Pane>
+      ) : null}
     </MapContainer>
   );
 }

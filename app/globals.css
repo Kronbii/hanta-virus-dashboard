@@ -471,6 +471,25 @@ body {
 .scroll-hide { scrollbar-width: none; -ms-overflow-style: none; }
 .scroll-hide::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
+/* Sandbox panel controls — match the OSINT dark theme. */
+.sandbox-input {
+  display: block;
+  width: 100%;
+  background: rgba(10, 18, 32, 0.6);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 11px;
+  outline: none;
+}
+.sandbox-input:focus { border-color: var(--brand); }
+.sandbox-range {
+  width: 100%;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
 /* Dark mode = default. shadcn tokens routed to live-tracker palette so
    all shadcn primitives (Tabs, Card, Badge, Tooltip…) inherit the OSINT look. */
 .dark {
