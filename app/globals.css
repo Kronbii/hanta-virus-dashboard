@@ -471,23 +471,35 @@ body {
 .scroll-hide { scrollbar-width: none; -ms-overflow-style: none; }
 .scroll-hide::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
-/* Sandbox panel controls — match the OSINT dark theme. */
-.sandbox-input {
-  display: block;
-  width: 100%;
-  background: rgba(10, 18, 32, 0.6);
-  border: 1px solid var(--border);
-  color: var(--fg);
-  border-radius: 4px;
-  padding: 4px 6px;
-  font-size: 11px;
-  outline: none;
+/* ────────────────────────────────────────────────────────────────────────────
+   Country labels — in-house alternative to the pre-rendered CARTO label
+   tiles. Tweak any of these properties to restyle every country label on
+   the map (color, size, weight, shadow, casing, letter-spacing).
+   ──────────────────────────────────────────────────────────────────────── */
+
+.country-label {
+  background: transparent !important;
+  border: none !important;
+  pointer-events: none;
+  /* The DivIcon has iconSize [0,0]; the inner span is absolutely centered. */
 }
-.sandbox-input:focus { border-color: var(--brand); }
-.sandbox-range {
-  width: 100%;
-  accent-color: var(--brand);
-  cursor: pointer;
+.country-label > span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  white-space: nowrap;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(220, 230, 245, 0.72);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 4px rgba(0, 0, 0, 0.9),
+    0 0 8px rgba(0, 0, 0, 0.7),
+    0 0 1px rgba(0, 0, 0, 1);
 }
 
 /* Dark mode = default. shadcn tokens routed to live-tracker palette so
