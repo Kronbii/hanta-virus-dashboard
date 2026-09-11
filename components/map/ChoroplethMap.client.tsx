@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { GeoJSON as LeafletGeoJSON } from "leaflet";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import L, { type PathOptions } from "leaflet";
@@ -9,6 +9,7 @@ import {
   TileLayer,
   GeoJSON,
   CircleMarker,
+  Marker,
   Popup,
   Pane,
   LayerGroup,
@@ -141,6 +142,49 @@ function FitToEvents({
   return null;
 }
 
+interface CountryLabel {
+  iso3: string;
+  name: string;
+  center: [number, number]; // [lon, lat]
+  bboxWidth: number;
+}
+
+/**
+ * In-house country name labels (replaces CARTO's pre-rendered label tiles).
+ * Renders each name as a DivIcon marker at the country's centroid, in a
+ * dedicated Leaflet pane above the markers. Style via `.country-label` in
+ * globals.css. Zoom-aware filtering: at low zoom we only label the larger
+ * countries to keep the map from drowning in text.
+ */
+function CountryLabelsLayer({ labels }: { labels: CountryLabel[] }) {
+  const map = useMap();
+  const [zoom, setZoom] = useState(() => map.getZoom());
+  useMapEvents({
+    zoomend: () => setZoom(map.getZoom()),
+  });
+  const minWidth = zoom <= 2 ? 18 : zoom <= 3 ? 10 : zoom <= 4 ? 5 : zoom <= 5 ? 2 : 0;
+  return (
+    <Pane name="country-labels" style={{ zIndex: 650, pointerEvents: "none" }}>
+      {labels
+        .filter((l) => l.bboxWidth >= minWidth)
+        .map((l) => (
+          <Marker
+            key={l.iso3}
+            position={[l.center[1], l.center[0]]}
+            interactive={false}
+            keyboard={false}
+            icon={L.divIcon({
+              className: "country-label",
+              html: `<span>${l.name}</span>`,
+              iconSize: [0, 0],
+              iconAnchor: [0, 0],
+            })}
+          />
+        ))}
+    </Pane>
+  );
+}
+
 /**
  * Clears `?country=` when the user clicks anywhere on the map background
  * (ocean / land outside any rendered country polygon). Country polygon
@@ -152,6 +196,72 @@ function MapBackgroundClickClear({ onClear }: { onClear: () => void }) {
     click: () => onClear(),
   });
   return null;
+}
+
+// Area-weighted centroid of a single polygon ring (shoelace formula).
+// Much better than average-of-points: vertex-dense coastlines no longer
+// pull the centroid toward the shore.
+function polygonAreaCentroid(
+  ring: number[][],
+): { cx: number; cy: number; area: number } {
+  let area = 0;
+  let cx = 0;
+  let cy = 0;
+  const n = ring.length;
+  for (let i = 0; i < n - 1; i++) {
+    const [x0, y0] = ring[i];
+    const [x1, y1] = ring[i + 1];
+    const cross = x0 * y1 - x1 * y0;
+    area += cross;
+    cx += (x0 + x1) * cross;
+    cy += (y0 + y1) * cross;
+  }
+  area /= 2;
+  if (Math.abs(area) < 1e-10) {
+    // Degenerate ring — fall back to first vertex so we don't divide by 0.
+    return { cx: ring[0]?.[0] ?? 0, cy: ring[0]?.[1] ?? 0, area: 0 };
+  }
+  const factor = 1 / (6 * area);
+  return { cx: cx * factor, cy: cy * factor, area: Math.abs(area) };
+}
+
+function featureCentroid(feature: Feature<Geometry, unknown>): [number, number] | null {
+  const g = feature.geometry;
+  if (g.type === "Polygon") {
+    const c = polygonAreaCentroid(g.coordinates[0]);
+    return [c.cx, c.cy];
+  }
+  if (g.type === "MultiPolygon") {
+    // For multi-part countries (USA + Alaska + Hawaii, France + overseas,
+    // Indonesia's archipelago) label the LARGEST landmass by area.
+    let best: { cx: number; cy: number; area: number } | null = null;
+    for (const poly of g.coordinates) {
+      const c = polygonAreaCentroid(poly[0]);
+      if (!best || c.area > best.area) best = c;
+    }
+    return best ? [best.cx, best.cy] : null;
+  }
+  return null;
+}
+
+// Approximate longitudinal width of a feature's bounding box. Used as a
+// crude proxy for "is this country big enough to bother labeling at low
+// zoom" — at higher zooms we show everything.
+function featureBboxWidth(feature: Feature<Geometry, unknown>): number {
+  let min = Infinity;
+  let max = -Infinity;
+  const visit = (ring: number[][]) => {
+    for (const [x] of ring) {
+      if (x < min) min = x;
+      if (x > max) max = x;
+    }
+  };
+  const g = feature.geometry;
+  if (g.type === "Polygon") visit(g.coordinates[0]);
+  else if (g.type === "MultiPolygon") {
+    for (const p of g.coordinates) visit(p[0]);
+  }
+  return max - min;
 }
 
 function formatDate(iso: string | undefined): string | undefined {
@@ -182,7 +292,10 @@ export function ChoroplethMap({
   feedVisible = true,
   panelVisible = true,
   tileLandUrl = TILE_LAND,
-  tileLabelsUrl = TILE_LABELS,
+  // Default to null — country names are rendered as in-house DivIcon labels
+  // (see countryLabels below) so they can be styled via the .country-label
+  // class in globals.css.
+  tileLabelsUrl = null,
   tileAttribution = TILE_ATTRIBUTION,
   fillOpacity = 0.55,
   emptyOpacity = 0,
@@ -248,6 +361,21 @@ export function ChoroplethMap({
     () => scaleQuantize<string>().domain([1, Math.max(max, 1)]).range(colorRamp),
     [max, colorRamp],
   );
+
+  // Pre-compute country label data (centroid + name + bbox width). The world
+  // GeoJSON is a module constant so this is computed once per component.
+  const countryLabels = useMemo<CountryLabel[]>(() => {
+    const out: CountryLabel[] = [];
+    for (const f of WORLD_GEOJSON.features) {
+      const iso3 = numericToAlpha3(f.id as string | number | undefined);
+      const name = (f.properties as { name?: string } | null)?.name;
+      if (!iso3 || !name) continue;
+      const center = featureCentroid(f);
+      if (!center) continue;
+      out.push({ iso3, name, center, bboxWidth: featureBboxWidth(f) });
+    }
+    return out;
+  }, []);
 
   const onSelect = (iso3: string) => {
     if (!interactive) return;
@@ -360,9 +488,15 @@ export function ChoroplethMap({
       // map view jumps to keep GeoJSON/markers aligned. Latitude is clamped.
       worldCopyJump={worldCopyJump}
       zoomAnimation={zoomAnimation}
+      // Smoother zoom: fractional steps (zoomSnap < 1) interpolate between
+      // integer levels so wheel/pinch zoom no longer "snaps" jarringly. A
+      // lower wheelPxPerZoomLevel makes each wheel tick produce a smaller
+      // zoom delta, which combined with zoomSnap = 0.25 feels continuous.
+      zoomSnap={0.25}
+      zoomDelta={0.5}
       scrollWheelZoom
       wheelDebounceTime={wheelDebounceTime}
-      wheelPxPerZoomLevel={120}
+      wheelPxPerZoomLevel={60}
       zoomControl={zoomControl}
       attributionControl
       // Latitude clamped, longitude free — worldCopyJump handles the wrap.
@@ -482,12 +616,17 @@ export function ChoroplethMap({
         })}
       </LayerGroup>
 
-      {/* Labels above everything else. Wraps along with the base tiles. */}
+      {/* Optional pre-rendered label tiles (off by default — we render our
+          own labels below). Pass a tileLabelsUrl to re-enable CARTO labels. */}
       {tileLabelsUrl ? (
-        <Pane name="labels" style={{ zIndex: 650, pointerEvents: "none" }}>
+        <Pane name="tile-labels" style={{ zIndex: 640, pointerEvents: "none" }}>
           <TileLayer key={tileLabelsUrl} url={tileLabelsUrl} />
         </Pane>
       ) : null}
+
+      {/* In-house country labels — edit appearance via .country-label
+          in globals.css (font, color, shadow, casing, size). */}
+      <CountryLabelsLayer labels={countryLabels} />
     </MapContainer>
   );
 }
